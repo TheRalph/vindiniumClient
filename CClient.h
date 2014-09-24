@@ -70,7 +70,7 @@ class CClient
         /**
         * @brief Constructor of Vindinium client
         * @param inVindiniumKey the key to be connected to the web server
-        * @param inVindiniumUrl the Vindinium web serser url to be used
+        * @param inVindiniumUrl the Vindinium web server url to be used
         */
         CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org");
 
@@ -104,12 +104,20 @@ class CClient
         /**
         * @brief Compute the next move according to the current Game status
         * @param inGame the current Game
-        * @param inHero the current Hero
         * @return the action to do
         * 
         * The default behavior is random!
+        * This function must be overloaded with the needed AI
         */
-        virtual E_VINDINIUM_ACTIONS playAI(const CGame& inGame, const CHero& inHero);
+        virtual E_VINDINIUM_ACTIONS playAI(const CGame& inGame);
+
+    protected:
+        /**
+        * @brief Constructor by default of Vindinium client. Only used by childrens
+        * @param inVindiniumKey the key to be connected to the web server
+        * @param inVindiniumUrl the Vindinium web server url to be used
+        */
+        CClient() {}
 
     private:
         CHttpTools m_httpTools;

@@ -26,13 +26,13 @@ CHero::CHero(const Json::Value& inJsonValues)
     m_name = inJsonValues["name"].asString();
     m_userId = inJsonValues["userId"].asString();
     m_elo = inJsonValues["elo"].asInt();
-    m_position.setX(inJsonValues["pos"]["x"].asInt());
-    m_position.setY(inJsonValues["pos"]["y"].asInt());
+    m_position.setX(inJsonValues["pos"]["y"].asInt()); // x/y are inverted
+    m_position.setY(inJsonValues["pos"]["x"].asInt()); // x/y are inverted
     m_life = inJsonValues["life"].asInt();
     m_gold = inJsonValues["gold"].asInt();
     m_mineCount = inJsonValues["mineCount"].asInt();
-    m_spawnPosition.setX(inJsonValues["spawnPos"]["x"].asInt());
-    m_spawnPosition.setY(inJsonValues["spawnPos"]["y"].asInt());
+    m_spawnPosition.setX(inJsonValues["spawnPos"]["y"].asInt()); // x/y are inverted
+    m_spawnPosition.setY(inJsonValues["spawnPos"]["x"].asInt()); // x/y are inverted
     m_isCrashed = inJsonValues["crashed"].asInt();
 } // Constructor
 
@@ -48,8 +48,8 @@ CHero::~CHero()
 void CHero::update(const Json::Value& inJsonValues)
 {
 //    m_elo = inJsonValues["elo"].asInt(); ??
-    m_position.setX(inJsonValues["pos"]["x"].asInt());
-    m_position.setY(inJsonValues["pos"]["y"].asInt());
+    m_position.setX(inJsonValues["pos"]["y"].asInt()); // x/y are inverted
+    m_position.setY(inJsonValues["pos"]["x"].asInt()); // x/y are inverted
     m_life = inJsonValues["life"].asInt();
     m_gold = inJsonValues["gold"].asInt();
     m_mineCount = inJsonValues["mineCount"].asInt();

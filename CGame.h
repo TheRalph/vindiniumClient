@@ -27,6 +27,19 @@ namespace VDC
 namespace VDC
 {
 
+/**
+ * @brief Definition of possible objects in the board
+ */
+enum E_BOARD_OBJECTS
+{
+    E_NO_OBJECT = 0,
+    E_IMPASSABLE_WOOD,
+    E_GOLD_MINE,
+    E_TAVERN,
+    E_HERO,
+    NB_BOARD_OBJECTS
+}; // enum E_BOARD_OBJECTS
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -38,8 +51,9 @@ class CGame
         /**
         * @brief Constructor of Vindinium game
         * @param inJsonValues the json data describing the game
+        * @param inMyHeroId the id of the hero to play
         */
-        CGame(const Json::Value& inJsonValues);
+        CGame(const Json::Value& inJsonValues, const int inMyHeroId);
 
         /**
         * @brief Destructor of Vindinium game
@@ -70,6 +84,18 @@ class CGame
         * @return a reference to an hero
         */
         inline CHero& getHero(const int inHeroId) { return m_heros.at(inHeroId); }
+
+        /**
+        * @brief Return the current hero to play
+        * @return the current hero to play
+        */
+        inline CHero& getMyHero() { return getHero(m_myHeroId-1); }
+
+        /**
+        * @brief Return the id of the current hero to play
+        * @return the id of the current hero to play
+        */
+        inline int getMyHeroId() { return m_myHeroId; }
 
         /**
         * @brief Return the current number of turns of game (is a multiple of the number of player).
@@ -116,6 +142,25 @@ class CGame
         */
         void parseBoard();
 
+        /**
+        * @brief return the abscissa in the 1D board representation of a 2D position
+        * @param inPosition the position to use
+        * @return the abscissa in the 1D board representation of a 2D position
+        */
+        inline int get1DCoordOnBoard(const CPosition& inPosition) { return ((inPosition.getX()>=0 && inPosition.getY()>=0)? inPosition.getX()+inPosition.getY()*m_boardEdgeSize:-1); }
+
+        /**
+        * @brief return the 2D position in the board
+        * @param in1DPosition the position to use
+        * @return the 2D position in the board
+        */
+        inline CPosition get2DCoordOnBoard(const int in1DPosition) { return CPosition( in1DPosition%m_boardEdgeSize, in1DPosition/m_boardEdgeSize); }
+
+        /**
+        * @brief Update the board distances definition according to heros positions
+        */
+        void updateBoardDistances();
+
     private:
         std::string m_id;
         int m_nbPlayers;
@@ -123,11 +168,15 @@ class CGame
         int m_maxTurns;
         std::vector<CHero> m_heros;
         int m_boardEdgeSize;
-        std::string m_board;
+        std::string m_boardStr;
         bool m_isFinished;
+        int m_myHeroId; ///< the id of the current hero to play. Use m_myHeroId-1 to find it in m_heros vector
 
         /// board data
         std::vector<CPosition> m_tavernPositionsList; ///< the list of tavern positions
+        std::vector<CPosition> m_goldMinePositionsList; /// the list of gold mine positions
+        std::vector<int> m_boardDistances; ///< all the distances from each board cell to the top-left corner of the board
+        std::vector<E_BOARD_OBJECTS> m_board; ///< board defined at the beginning of the game
 }; // class CGame
 
 } // namespace VDC

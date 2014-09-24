@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Global includes
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,21 @@ class CPosition
         * @param inY the Y position to use
         */
         inline void setXY(const int inX, const int inY) { m_x = inX; m_y = inY; }
+
+        /**
+        * @brief Return the 4 connected positions of the current one
+        * @return the 4 connected positions of the current one
+        */
+        inline std::vector<CPosition> get4Connected() const
+        {
+            std::vector<CPosition> vector4Connected;
+            vector4Connected.reserve(4);
+            vector4Connected.emplace_back(m_x+1, m_y);
+            vector4Connected.emplace_back(m_x-1, m_y);
+            vector4Connected.emplace_back(m_x  , m_y+1);
+            vector4Connected.emplace_back(m_x  , m_y-1);
+            return vector4Connected;
+        } // get4Connected
 
     private:
         int m_x; ///< the x position

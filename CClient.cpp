@@ -63,7 +63,7 @@ std::string CClient::getKey() const
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_VINDINIUM_ACTIONS CClient::playAI(const CGame& /*inGame*/, const CHero& /*inHero*/)
+E_VINDINIUM_ACTIONS CClient::playAI(const CGame& /*inGame*/)
 {
     return (E_VINDINIUM_ACTIONS)(rand()%NB_VINDINIUM_ACTIONS);
 } // playAI
@@ -104,9 +104,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
         }
         else
         {
-            CGame currentGame(jsonValues["game"]);
-            const int currentHeroId = jsonValues["hero"]["id"].asInt()-1; /// id in heros are between 1 and G_NUMBER_OF_PLAYER
-            CHero &currentHero = currentGame.getHero(currentHeroId);
+            CGame currentGame(jsonValues["game"], jsonValues["hero"]["id"].asInt());
 
             std::string token   = jsonValues["token"].asString();
             std::string viewUrl = jsonValues["viewUrl"].asString();
@@ -121,12 +119,11 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
             std::cout<<std::endl<<"viewURL = '"<<viewUrl<<"'"<<std::endl;
             std::cout<<std::endl;
 
-//std::cout<<"Current Hero id="<<currentHero.getId()<<std::endl;
-//currentGame.print();
+currentGame.print();
 
             while (!currentGame.isFinished())
             {
-                E_VINDINIUM_ACTIONS newDirection = playAI(currentGame, currentHero);
+                E_VINDINIUM_ACTIONS newDirection = playAI(currentGame);
 
                 m_httpTools.getDataFile( playUrlForRequest, // the url to use
                                          jsonResult,  // the result
