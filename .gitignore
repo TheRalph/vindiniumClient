@@ -1,0 +1,8 @@
+*~
+*.so
+*.o
+build/
+bin/
+lib/
+*.kdev4
+*.pb.*
