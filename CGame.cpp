@@ -3,7 +3,7 @@
 /// Global includes
 #include <iostream>
 #include <iomanip>
-#include <queue>
+#include <list>
 #include <json/json.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ CGame::CGame(const Json::Value& inJsonValues, const int inMyHeroId)
 
     m_isFinished = inJsonValues["finished"].asBool();
 
-    parseBoard();
+    initStaticBoard();
 } // Constructor
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,12 +62,12 @@ CGame::~CGame()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void CGame::parseBoard()
+void CGame::initStaticBoard()
 {
     m_tavernPositionsList.clear();
     m_goldMinePositionsList.clear();
-    m_board.clear();
-    m_board.reserve(m_boardEdgeSize*m_boardEdgeSize);
+    m_staticBoard.clear();
+    m_staticBoard.reserve(m_boardEdgeSize*m_boardEdgeSize);
 
     /// build static board
     const char *pChar = m_boardStr.data();
@@ -84,60 +84,52 @@ void CGame::parseBoard()
             {
                 case '[': // Tavern
                     m_tavernPositionsList.emplace_back(j/2, i);
-                    m_board.emplace_back(E_TAVERN);
+                    m_staticBoard.emplace_back(E_TAVERN);
                     break;
                 case '$': // Gold mine
                     m_goldMinePositionsList.emplace_back(j/2, i);
-                    m_board.emplace_back(E_GOLD_MINE);
+                    m_staticBoard.emplace_back(E_GOLD_MINE);
                     break;
                 case ' ': // empty cell
-                    m_board.emplace_back(E_NO_OBJECT);
+                    m_staticBoard.emplace_back(E_NO_OBJECT);
                     break;
-                case '@': // Hero, nothing to do
+                case '@': // Hero
+                    m_staticBoard.emplace_back(E_NO_OBJECT); /// heros are moving, they must not be into static board
+                    break;
                 case '#': // Impassable wood
                 default: // by default Impassable wood
-                    m_board.emplace_back(E_IMPASSABLE_WOOD);
+                    m_staticBoard.emplace_back(E_IMPASSABLE_WOOD);
                     break;
             } // switch
             pChar+=2;
         } // for
     } // for
 
+    updateCurrentBoard();
     updateBoardDistances();
-} // parseBoard
+} // initStaticBoard
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 void CGame::updateBoardDistances()
 {
-//common::CTicTac toc(__FUNCTION__);
-
-    std::vector<E_BOARD_OBJECTS> localBoard(m_board);
+    std::vector<E_BOARD_OBJECTS> localBoard(m_currentBoard);
     m_boardDistances.clear();
-    m_boardDistances.resize(m_board.size(), -1);
-
-    /// update heros positions
-    for (CHero &hero : m_heros)
-    {
-        if (hero.getId() != getMyHeroId())
-        {
-            localBoard.at(get1DCoordOnBoard(hero.getPosition())) = E_HERO;
-        } else {}
-    } // for
+    m_boardDistances.resize(m_staticBoard.size(), -1);
 
     const int nbCellsInBoard = localBoard.size();
     const int currentHeroPosId = get1DCoordOnBoard(getMyHero().getPosition());
     /// update board distances from first empty cell
-    std::queue<int> m_cellsToProcess;
-    m_cellsToProcess.emplace(currentHeroPosId);
-    m_cellsToProcess.emplace(0);
+    std::list<int> cellsToProcess;
+    cellsToProcess.push_back(currentHeroPosId);
+    cellsToProcess.push_back(0);
 
-    while (!m_cellsToProcess.empty())
+    while (!cellsToProcess.empty())
     {
-        const int cellId = m_cellsToProcess.front();
-        m_cellsToProcess.pop();
-        const int baseDistance = m_cellsToProcess.front();
-        m_cellsToProcess.pop();
+        const int cellId = cellsToProcess.front();
+        cellsToProcess.pop_front();
+        const int baseDistance = cellsToProcess.front();
+        cellsToProcess.pop_front();
 
         // set the current cell value
         m_boardDistances.at(cellId) = baseDistance;
@@ -150,12 +142,13 @@ void CGame::updateBoardDistances()
             const int localCellid = get1DCoordOnBoard(connectedCell);
             if ( localCellid >= 0 &&
                  localCellid < nbCellsInBoard &&
-                 m_board.at(localCellid) == E_NO_OBJECT &&
-                 m_boardDistances.at(localCellid) < 0
+                 localBoard.at(localCellid) == E_NO_OBJECT &&
+                 m_boardDistances.at(localCellid) == -1
                )
             {
-                m_cellsToProcess.emplace(localCellid);
-                m_cellsToProcess.emplace(baseDistance+1);
+                cellsToProcess.push_back(localCellid);
+                cellsToProcess.push_back(baseDistance+1);
+                m_boardDistances.at(localCellid) = -2;
             } else {}
         } // for
     } // while
@@ -175,8 +168,59 @@ void CGame::update(const Json::Value& inJsonValues)
         m_heros.at(i++).update(hero);
     } // for
 
+    updateCurrentBoard();
     updateBoardDistances();
 } // update
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void CGame::updateCurrentBoard()
+{
+    /// update heros positions on current board
+    m_currentBoard = m_staticBoard;
+    for (CHero &hero : m_heros)
+    {
+        if (hero.getId() != getMyHeroId())
+        {
+            m_currentBoard.at(get1DCoordOnBoard(hero.getPosition())) = E_HERO;
+        } else {}
+    } // for
+} // updateCurrentBoard
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+int CGame::getDistanceTo(const CPosition& inPosition)
+{
+    const int cellId = get1DCoordOnBoard(inPosition);
+    int distance = m_boardDistances.at(cellId);
+
+    /// check if it is an hero, a mine or a tavern
+    if (distance < 0)
+    {
+        const E_BOARD_OBJECTS object = m_currentBoard.at(cellId);
+        if (object != E_IMPASSABLE_WOOD)
+        {
+            const std::vector<CPosition> the4Connecteds = inPosition.get4Connected();
+            int bestDist = m_boardEdgeSize*2;
+            for (const CPosition& neighbor : the4Connecteds)
+            {
+                const int neighborId = get1DCoordOnBoard(neighbor);
+                const int neighborDist = m_boardDistances.at(neighborId);
+                if (neighborDist >= 0 && neighborDist < bestDist)
+                {
+                    bestDist = neighborDist;
+                } else {}
+            } // for
+            // if a neighbor can be reached, update the distance
+            if (bestDist < m_boardEdgeSize*2)
+            {
+                distance = 1 + bestDist;
+            } else {}
+        } else {}
+    } else {}
+
+    return distance;
+} // getDistanceTo
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,12 +257,12 @@ void CGame::print()
         std::cout<<"Gold Mine position="<<goldMinePos.getX()<<" , "<<goldMinePos.getY()<<std::endl;
     } // for
 
-    std::cout<<"Board:"<<std::endl;
+    std::cout<<"Current board:"<<std::endl;
     for (int i = 0, cellId = 0; i<m_boardEdgeSize; i++)
     {
         for (int j = 0; j<m_boardEdgeSize; j++)
         {
-            std::cout<<std::setw(4)<<m_board.at(cellId++);
+            std::cout<<std::setw(4)<<m_currentBoard.at(cellId++);
         } // for
         std::cout<<std::endl;
     } // for

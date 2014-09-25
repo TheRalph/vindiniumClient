@@ -65,6 +65,22 @@ class CGame
         * @param inJsonValues the json data describing the game
         */
         void update(const Json::Value& inJsonValues);
+#if 0
+        /**
+        * @brief Get path from the current hero to go to a given position
+        * @param inPosition the position to go to
+        * @return a vector of cell positions
+        */
+        std::vector<CPosition> getPathTo(const CPosition& inPosition);
+#endif
+        /**
+        * @brief Get number of cells from the current hero and a position to reach (shortest path)
+        * @param inPosition the position to use
+        * @return the number of cells to cross to reach the given position
+        * 
+        * A negative value means, the destination can not be reached
+        */
+        int getDistanceTo(const CPosition& inPosition);
 
         /**
         * @brief Return the game id
@@ -138,9 +154,16 @@ class CGame
 
     private:
         /**
-        * @brief Fill the list of objects
+        * @brief Initialize the board of static objects
         */
-        void parseBoard();
+        void initStaticBoard();
+
+        /**
+        * @brief Update the current board with the static board and the moving objects
+        * 
+        * Current hero is not in the current board, only opponents are
+        */
+        void updateCurrentBoard();
 
         /**
         * @brief return the abscissa in the 1D board representation of a 2D position
@@ -176,7 +199,8 @@ class CGame
         std::vector<CPosition> m_tavernPositionsList; ///< the list of tavern positions
         std::vector<CPosition> m_goldMinePositionsList; /// the list of gold mine positions
         std::vector<int> m_boardDistances; ///< all the distances from each board cell to the top-left corner of the board
-        std::vector<E_BOARD_OBJECTS> m_board; ///< board defined at the beginning of the game
+        std::vector<E_BOARD_OBJECTS> m_staticBoard; ///< board defined at the beginning of the game with only static objects
+        std::vector<E_BOARD_OBJECTS> m_currentBoard; ///< current board with other heros
 }; // class CGame
 
 } // namespace VDC

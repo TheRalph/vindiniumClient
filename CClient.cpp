@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sstream>
 #include <json/json.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,7 @@
 #include "CHero.h"
 #include "CTicTac.h"
 
-#define PROFILE_TIME 1
+#define PROFILE_TIME 0
 
 namespace VDC
 {
@@ -27,9 +28,10 @@ static const std::string G_SUBURL_PER_MODE[NB_VINDINIUM_MODE]={
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-CClient::CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl)
+CClient::CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl, const std::string& inNavigator)
 : m_key(inVindiniumKey),
-  m_svrHostName(inVindiniumUrl)
+  m_svrHostName(inVindiniumUrl),
+  m_navigator(inNavigator)
 {
     m_svrIp = m_httpTools.getIpFromHostName(inVindiniumUrl);
     srand(time(NULL)); // init random
@@ -42,6 +44,13 @@ CClient::~CClient()
 {
     std::cout<<"Vindinium client with key: '"<<m_key<<"' has been destroyed."<<std::endl;
 } // Destructor
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void CClient::setNavigator(const std::string& inNavigator)
+{
+    m_navigator = inNavigator;
+} // setNavigator
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,13 +82,23 @@ E_VINDINIUM_ACTIONS CClient::playAI(const CGame& /*inGame*/)
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-bool CClient::startGame(const E_VINDINIUM_MODE inMode)
+bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, const std::string& inMap)
 {
     bool retVal = false;
 
     std::string fullUrl(m_svrHostName+"/"+G_SUBURL_PER_MODE[inMode]);
 
 //std::cout<<"fullURL="<<fullUrl<<std::endl;
+    std::stringstream sstr;
+    sstr<<"key="<<m_key;
+    if (inNbTurns > 0)
+    {
+        sstr<<"&turns="<<inNbTurns;
+    } else {}
+    if (!inMap.empty())
+    {
+        sstr<<"&map="<<inMap;
+    } else {}
 
     std::string jsonResult;
     if (!m_httpTools.getDataFile( fullUrl,     // the url to use
@@ -88,9 +107,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
                                   "application/x-www-form-urlencoded", // the mime format
                                   "",          // no cookie
                                   "POST",      // the request method
-//                                  "key="+m_key // the vindinum key
-                                  "key="+m_key+"&map=m1" // the vindinum key and training options
-//                                  "key="+m_key+"&turns=50&map=m3" // the vindinum key and training options m3 (20)
+                                  sstr.str()   // the vindinum play configuration
                                 ))
     {
         std::cerr<<"Can not connect to '"<<fullUrl<<"'"<<std::endl;
@@ -123,14 +140,18 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
             std::cout<<std::endl<<"viewURL = '"<<viewUrl<<"'"<<std::endl;
             std::cout<<std::endl;
 
-currentGame.print();
+            if (!m_navigator.empty())
+            {
+                ::system(std::string(m_navigator+" "+viewUrl+"&").c_str());
+            } else {}
+//currentGame.print();
 
             while (!currentGame.isFinished())
             {
                 E_VINDINIUM_ACTIONS newDirection = playAI(currentGame);
 {
 #if (PROFILE_TIME == 1)
-//common::CTicTac toc("http");
+common::CTicTac toc("http");
 #endif
                 m_httpTools.getDataFile( playUrlForRequest, // the url to use
                                          jsonResult,  // the result
@@ -146,12 +167,12 @@ currentGame.print();
 
 {
 #if (PROFILE_TIME == 1)
-//common::CTicTac toc("update");
+common::CTicTac toc("update");
 #endif
                 currentGame.update(jsonValues["game"]); // hero update is done in game
 }
 
-                std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) # Finished: "<<((currentGame.isFinished())? "true":"false")<<'\r';
+                std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % )"<<'\r';
                 std::cout.flush();
             } // while
             retVal = currentGame.isFinished();

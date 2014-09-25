@@ -71,13 +71,20 @@ class CClient
         * @brief Constructor of Vindinium client
         * @param inVindiniumKey the key to be connected to the web server
         * @param inVindiniumUrl the Vindinium web server url to be used
+        * @param inNavigator the navigator to start on start game. By default no navigator is started
         */
-        CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org");
+        CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org", const std::string& inNavigator = "");
 
         /**
         * @brief Destructor of Vindinium client
         */
         virtual ~CClient();
+
+        /**
+        * @brief Set the navigator to start on start game. By default no navigator is started
+        * @param inNavigator the navigator to start on start game. By default no navigator is started
+        */
+        void setNavigator(const std::string& inNavigator);
 
         /**
         * @brief Return the Ip of the current server
@@ -96,10 +103,12 @@ class CClient
 
         /**
         * @brief Start a game on the current Vindinium server
-        * @param inMode the mode to use in the new game
+        * @param inMode the mode to use in the new game, default is arena
+        * @param inNbTurns only used in training mode. This is the number of turns to play. Default is -1 that is the default server number of turns
+        * @param inMap only used in training mode. This is the map to use to play (m1 ... m6). Default is empty that is random server map
         * @return true if the game has been successfully started, false otherwise
         */
-        bool startGame(const E_VINDINIUM_MODE inMode);
+        bool startGame(const E_VINDINIUM_MODE inMode = E_VINDINIUM_ARENA_MODE, const int inNbTurns = -1, const std::string& inMap = "");
 
         /**
         * @brief Compute the next move according to the current Game status
@@ -124,6 +133,7 @@ class CClient
         std::string m_key;
         std::string m_svrHostName;
         std::string m_svrIp;
+        std::string m_navigator;
 }; // class CVindiniumClient
 
 } // namespace VDC

@@ -18,20 +18,24 @@ void displaySyntax(const std::string& inExeName)
     {
         exeName = inExeName.substr(idOfPoint+1);
     } else {}
-    std::cout<<"Syntax: "<<exeName<<" vindinium_key"<<std::endl;
+    std::cout<<"Syntax: "<<exeName<<" vindinium_key [navigator]"<<std::endl;
 } // displaySyntax
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 int main(int inArgC, char** inpArgV)
 {
-    if (inArgC != 2)
+    if (inArgC < 2 && inArgC > 3)
     {
         displaySyntax(inpArgV[0]);
     }
     else
     {
         VDC::CMyBotClient vdcClient(inpArgV[1]);
+        if (inArgC==3)
+        {
+            vdcClient.setNavigator(inpArgV[2]);
+        } else {}
 
         if (!vdcClient.startGame(VDC::E_VINDINIUM_TRAINING_MODE))
         {
