@@ -89,8 +89,8 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
                                   "",          // no cookie
                                   "POST",      // the request method
 //                                  "key="+m_key // the vindinum key
-//                                  "key="+m_key+"&turns=50&map=m1" // the vindinum key and training options
-                                  "key="+m_key+"&turns=50&map=m3" // the vindinum key and training options m3 (20)
+                                  "key="+m_key+"&map=m1" // the vindinum key and training options
+//                                  "key="+m_key+"&turns=50&map=m3" // the vindinum key and training options m3 (20)
                                 ))
     {
         std::cerr<<"Can not connect to '"<<fullUrl<<"'"<<std::endl;

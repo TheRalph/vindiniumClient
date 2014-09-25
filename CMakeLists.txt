@@ -37,3 +37,10 @@ add_executable(vindiniumTest vindiniumTest.cpp)
 target_link_libraries( vindiniumTest vindinium )
 set_target_properties(vindiniumTest PROPERTIES
          RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+
+### botMitch
+add_executable(botMitch botMitch/CMyBotClient.h botMitch/CMyBotClient.cpp botMitch/botAI.cpp)
+target_link_libraries(botMitch vindinium )
+set_target_properties(botMitch PROPERTIES
+         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
