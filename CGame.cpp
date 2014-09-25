@@ -69,6 +69,7 @@ void CGame::parseBoard()
     m_board.clear();
     m_board.reserve(m_boardEdgeSize*m_boardEdgeSize);
 
+    /// build static board
     const char *pChar = m_boardStr.data();
     for (int i = 0; i<m_boardEdgeSize; i++)
     {
@@ -83,21 +84,19 @@ void CGame::parseBoard()
             {
                 case '[': // Tavern
                     m_tavernPositionsList.emplace_back(j/2, i);
-                    m_board.push_back(E_TAVERN);
+                    m_board.emplace_back(E_TAVERN);
                     break;
                 case '$': // Gold mine
                     m_goldMinePositionsList.emplace_back(j/2, i);
-                    m_board.push_back(E_GOLD_MINE);
+                    m_board.emplace_back(E_GOLD_MINE);
+                    break;
+                case ' ': // empty cell
+                    m_board.emplace_back(E_NO_OBJECT);
                     break;
                 case '@': // Hero, nothing to do
-//                    m_board.push_back(E_HERO); ///<======= WARNING: probably to not manae heros here!
-//                    break;
-                case ' ': // empty cell
-                    m_board.push_back(E_NO_OBJECT);
-                    break;
                 case '#': // Impassable wood
                 default: // by default Impassable wood
-                    m_board.push_back(E_IMPASSABLE_WOOD);
+                    m_board.emplace_back(E_IMPASSABLE_WOOD);
                     break;
             } // switch
             pChar+=2;
@@ -111,6 +110,8 @@ void CGame::parseBoard()
 ////////////////////////////////////////////////////////////////////////////////
 void CGame::updateBoardDistances()
 {
+//common::CTicTac toc(__FUNCTION__);
+
     std::vector<E_BOARD_OBJECTS> localBoard(m_board);
     m_boardDistances.clear();
     m_boardDistances.resize(m_board.size(), -1);

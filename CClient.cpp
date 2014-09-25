@@ -146,7 +146,7 @@ currentGame.print();
 
 {
 #if (PROFILE_TIME == 1)
-common::CTicTac toc("update");
+//common::CTicTac toc("update");
 #endif
                 currentGame.update(jsonValues["game"]); // hero update is done in game
 }
