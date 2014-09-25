@@ -24,7 +24,7 @@ add_definitions(-msse2)
 add_definitions(-msse3)
 add_definitions(-ffast-math)
 
-SET( libvindiniumSRC CClient.cpp CClient.h CHttpTools.h CHttpTools.cpp CHero.cpp CHero.h CGame.cpp CGame.h CPosition.h )
+SET( libvindiniumSRC CClient.cpp CClient.h CHttpTools.h CHttpTools.cpp CHero.cpp CHero.h CGame.cpp CGame.h CPosition.h CTicTac.h CTicTac.cpp )
 add_library(vindinium SHARED ${libvindiniumSRC})
 set_target_properties(vindinium PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)

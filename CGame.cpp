@@ -11,6 +11,7 @@
 /// Local includes
 #include "CGame.h"
 #include "CHero.h"
+#include "CTicTac.h"
 
 namespace VDC
 {
@@ -89,8 +90,8 @@ void CGame::parseBoard()
                     m_board.push_back(E_GOLD_MINE);
                     break;
                 case '@': // Hero, nothing to do
-                    m_board.push_back(E_HERO); ///<======= WARNING: probably to not manae heros here!
-                    break;
+//                    m_board.push_back(E_HERO); ///<======= WARNING: probably to not manae heros here!
+//                    break;
                 case ' ': // empty cell
                     m_board.push_back(E_NO_OBJECT);
                     break;
@@ -124,62 +125,39 @@ void CGame::updateBoardDistances()
     } // for
 
     const int nbCellsInBoard = localBoard.size();
-    // get first empty cell
-    int firstEmptyCellId = -1;
-    for (int i = 0; i < nbCellsInBoard && firstEmptyCellId < 0; i++)
+    const int currentHeroPosId = get1DCoordOnBoard(getMyHero().getPosition());
+    /// update board distances from first empty cell
+    std::queue<int> m_cellsToProcess;
+    m_cellsToProcess.emplace(currentHeroPosId);
+    m_cellsToProcess.emplace(0);
+
+    while (!m_cellsToProcess.empty())
     {
-        if (localBoard.at(i) == E_NO_OBJECT)
+        const int cellId = m_cellsToProcess.front();
+        m_cellsToProcess.pop();
+        const int baseDistance = m_cellsToProcess.front();
+        m_cellsToProcess.pop();
+
+        // set the current cell value
+        m_boardDistances.at(cellId) = baseDistance;
+
+        // stack the next cells to manage
+        const CPosition cellPosition( get2DCoordOnBoard(cellId) );
+        const std::vector<CPosition> the4Connecteds = cellPosition.get4Connected();
+        for (const CPosition &connectedCell : the4Connecteds)
         {
-            firstEmptyCellId = i;
-        } else {}
-    } // for
-
-    if (firstEmptyCellId >= 0)
-    {
-        /// update board distances from first empty cell
-        std::queue<int> m_cellsToProcess;
-        m_cellsToProcess.emplace(firstEmptyCellId);
-        m_cellsToProcess.emplace(0);
-
-        while (!m_cellsToProcess.empty())
-        {
-            const int cellId = m_cellsToProcess.front();
-            m_cellsToProcess.pop();
-            const int baseDistance = m_cellsToProcess.front();
-            m_cellsToProcess.pop();
-
-            // set the current cell value
-            m_boardDistances.at(cellId) = baseDistance;
-
-            // stack the next cells to manage
-            const CPosition cellPosition( get2DCoordOnBoard(cellId) );
-            std::vector<CPosition> the4Connecteds = cellPosition.get4Connected();
-            for (CPosition &connectedCell : the4Connecteds)
+            const int localCellid = get1DCoordOnBoard(connectedCell);
+            if ( localCellid >= 0 &&
+                 localCellid < nbCellsInBoard &&
+                 m_board.at(localCellid) == E_NO_OBJECT &&
+                 m_boardDistances.at(localCellid) < 0
+               )
             {
-                const int localCellid = get1DCoordOnBoard(connectedCell);
-                if ( localCellid >= 0 &&
-                     localCellid < nbCellsInBoard &&
-                     m_board.at(localCellid) == E_NO_OBJECT &&
-                     m_boardDistances.at(localCellid) < 0
-                   )
-                {
-                    m_cellsToProcess.emplace(localCellid);
-                    m_cellsToProcess.emplace(baseDistance+1);
-                } else {}
-            } // for
-        } // while
-
-        /// update board distances in order to be relative to the hero to play
-        const int currentHeroBaseDistance = std::max(0, m_boardDistances.at(get1DCoordOnBoard(getMyHero().getPosition())));
-        for (int &cellDistance : m_boardDistances)
-        {
-            if (cellDistance > 0)
-            {
-                cellDistance = abs(cellDistance - currentHeroBaseDistance);
+                m_cellsToProcess.emplace(localCellid);
+                m_cellsToProcess.emplace(baseDistance+1);
             } else {}
         } // for
-
-    } else {}
+    } // while
 } // updateBoardDistances
 
 ////////////////////////////////////////////////////////////////////////////////

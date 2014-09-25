@@ -13,6 +13,9 @@
 #include "CClient.h"
 #include "CGame.h"
 #include "CHero.h"
+#include "CTicTac.h"
+
+#define PROFILE_TIME 1
 
 namespace VDC
 {
@@ -86,7 +89,8 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode)
                                   "",          // no cookie
                                   "POST",      // the request method
 //                                  "key="+m_key // the vindinum key
-                                  "key="+m_key+"&turns=50&map=m1" // the vindinum key and training options
+//                                  "key="+m_key+"&turns=50&map=m1" // the vindinum key and training options
+                                  "key="+m_key+"&turns=50&map=m3" // the vindinum key and training options m3 (20)
                                 ))
     {
         std::cerr<<"Can not connect to '"<<fullUrl<<"'"<<std::endl;
@@ -124,7 +128,10 @@ currentGame.print();
             while (!currentGame.isFinished())
             {
                 E_VINDINIUM_ACTIONS newDirection = playAI(currentGame);
-
+{
+#if (PROFILE_TIME == 1)
+common::CTicTac toc("http");
+#endif
                 m_httpTools.getDataFile( playUrlForRequest, // the url to use
                                          jsonResult,  // the result
                                          false,       // no http header
@@ -133,8 +140,19 @@ currentGame.print();
                                          "POST",      // the request method
                                          "key="+m_key+"&dir="+G_VINDINIUM_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
                                        );
+}
+{
+#if (PROFILE_TIME == 1)
+common::CTicTac toc("json parse");
+#endif
                 jsonReader.parse(jsonResult, jsonValues);
+}
+{
+#if (PROFILE_TIME == 1)
+common::CTicTac toc("update");
+#endif
                 currentGame.update(jsonValues["game"]); // hero update is done in game
+}
 
                 std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) # Finished: "<<((currentGame.isFinished())? "true":"false")<<'\r';
                 std::cout.flush();
