@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <string>
 #include <vector>
+#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@ class CHttpTools
         * @param inContent a content to add in the request. Mainly used fot POST request.
         * @return true if the operation has been done successfully, false otherwise
         */
-        bool getDataFile(const std::string& inURLFileToGet, std::string& outReceivedData, bool inWithHTTPHeader = true, const std::string& inType="text/html", const std::string& inCookie="", const std::string& inRequestMethod = "GET", const std::string& inContent = "") const;
+        bool getDataFile(const std::string& inURLFileToGet, std::string& outReceivedData, bool inWithHTTPHeader = true, const std::string& inType="text/html", const std::string& inCookie="", const std::string& inRequestMethod = "GET", const std::string& inContent = "");
 
         /**
         * @brief Get the IP adress using an host name (dns name)
@@ -84,6 +85,9 @@ class CHttpTools
         * @return true if the operation has been done successfully, false otherwise
         */
         bool getDataFile(int inSockfd, const std::string& inURLFileToGet, std::string& outReceivedData, bool inWithHTTPHeader = true, const std::string& inType="text/html", const std::string& inCookie="", const std::string& inRequestMethod = "GET", const std::string& inContent = "") const;
+        
+    private:
+        std::map<std::string, std::string> m_ipsCache;
 }; // class CHttpTools
 
 } // namespace VDC

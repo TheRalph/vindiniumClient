@@ -130,7 +130,7 @@ currentGame.print();
                 E_VINDINIUM_ACTIONS newDirection = playAI(currentGame);
 {
 #if (PROFILE_TIME == 1)
-common::CTicTac toc("http");
+//common::CTicTac toc("http");
 #endif
                 m_httpTools.getDataFile( playUrlForRequest, // the url to use
                                          jsonResult,  // the result
@@ -141,12 +141,9 @@ common::CTicTac toc("http");
                                          "key="+m_key+"&dir="+G_VINDINIUM_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
                                        );
 }
-{
-#if (PROFILE_TIME == 1)
-common::CTicTac toc("json parse");
-#endif
+
                 jsonReader.parse(jsonResult, jsonValues);
-}
+
 {
 #if (PROFILE_TIME == 1)
 common::CTicTac toc("update");
@@ -156,8 +153,6 @@ common::CTicTac toc("update");
 
                 std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) # Finished: "<<((currentGame.isFinished())? "true":"false")<<'\r';
                 std::cout.flush();
-
-//                usleep(10); /// do not get to much cpu ...
             } // while
             retVal = currentGame.isFinished();
             std::cout<<std::endl;

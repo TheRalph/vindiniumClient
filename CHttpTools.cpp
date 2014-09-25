@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <future>
 #include <chrono>
+#include <sstream>
+#include <fcntl.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 ///// Local include
@@ -84,8 +86,6 @@ bool CHttpTools::sendData(int inSockfd, const char* inStrToSend, ...) const
 
     int retour = send(inSockfd,txtToSend.c_str(),sizeof(char)*txtToSend.size(),0 );
 
-//std::cout<<"Sent: '"<<txtToSend<<"'"<<std::endl;
-
     if (retour == SOCKET_ERROR)
     {
         std::cerr<<"send message error"<<std::endl;
@@ -106,26 +106,28 @@ bool CHttpTools::getDataFile(int inSockfd, const std::string& inURLFileToGet, st
         hostStr = inURLFileToGet.substr(0, endOfHost);
         relativeFile = inURLFileToGet.substr(endOfHost);
     } else {}
-    sendData(inSockfd,"%s %s HTTP/1.0\r\n",inRequestMethod.c_str(), relativeFile.c_str());
+
+    std::stringstream sstr;
+    sstr<<inRequestMethod<<" "<<relativeFile<<" HTTP/1.0\r\n";
     if (!hostStr.empty())
     {
-        sendData(inSockfd,"Host: %s\r\n", hostStr.c_str());
+        sstr<<"Host: "<<hostStr<<"\r\n";
     } else {}
-    sendData(inSockfd,"From: someuser@gmail.com\r\n");
-    sendData(inSockfd,"User-Agent: HTTPTool/1.0\r\n");
+    sstr<<"From: someuser@gmail.com\r\n";
+    sstr<<"User-Agent: HTTPTool/1.0\r\n";
     if (!inCookie.empty())
     {
-    	sendData(inSockfd,"Cookie: %s\r\n", inCookie.c_str());
+        sstr<<"Cookie: "<<inCookie<<"\r\n";
     } else {}
-    sendData(inSockfd,"Content-Type: %s\r\n", inType.c_str());
+    sstr<<"Content-Type: "<<inType<<"\r\n";
     if (!inContent.empty())
     {
-        sendData(inSockfd,"Content-Length: %d\r\n", inContent.size());
-        sendData(inSockfd,"\r\n");
-        sendData(inSockfd,"%s\r\n", inContent.c_str());
+        sstr<<"Content-Length: "<<inContent.size()<<"\r\n";
+        sstr<<"\r\n";
+        sstr<<inContent<<"\r\n";
     } else {}
-
-    sendData(inSockfd,"\r\n");
+    sstr<<"\r\n";
+    sendData(inSockfd, sstr.str().c_str());
 
     outReceivedData.clear();
     char buf[MAX_DATA_SIZE];
@@ -159,63 +161,73 @@ bool CHttpTools::getDataFile(int inSockfd, const std::string& inURLFileToGet, st
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-bool CHttpTools::getDataFile(const std::string& inURLFileToGet, std::string& outReceivedData, bool inWithHTTPHeader, const std::string& inType, const std::string& inCookie, const std::string& inRequestMethod, const std::string& inContent) const
+bool CHttpTools::getDataFile(const std::string& inURLFileToGet, std::string& outReceivedData, bool inWithHTTPHeader, const std::string& inType, const std::string& inCookie, const std::string& inRequestMethod, const std::string& inContent)
 {
     bool retVal = false;
 
     std::string URLFileToGetUpCase(inURLFileToGet),
-                ipToConnect(inURLFileToGet),
+                urlToConnect(inURLFileToGet),
                 fileToGet,
-                fullURL;
+                ipToConnect;
 
     std::transform(URLFileToGetUpCase.begin(), URLFileToGetUpCase.end(), URLFileToGetUpCase.begin(), (int(*)(int))std::toupper);
     size_t idStrToFind = URLFileToGetUpCase.find("HTTP://");
     if (idStrToFind != std::string::npos)
     {
-        ipToConnect.erase(0,idStrToFind+7);
+        urlToConnect.erase(0,idStrToFind+7);
     } else {}
 
-    idStrToFind = ipToConnect.find('/');
+    idStrToFind = urlToConnect.find('/');
     if (idStrToFind != std::string::npos)
     {
-        fileToGet = ipToConnect.substr(idStrToFind);
-        ipToConnect.erase(idStrToFind);
+        fileToGet = urlToConnect.substr(idStrToFind);
+        urlToConnect.erase(idStrToFind);
     } else {}
 
-    fullURL = "http://" + ipToConnect + fileToGet;
-
-    if (!ipToConnect.empty() && !fileToGet.empty())
+    if (!urlToConnect.empty() && !fileToGet.empty())
     {
         int sockfd;  
-        struct hostent *he;
-        struct sockaddr_in their_addr; /* Adresse de celui qui se connecte */
 
-        if ((he=gethostbyname(ipToConnect.c_str())) == NULL)
-        {  /* Info de l'hote */
-            herror("gethostbyname");
-            return false;
-        } else {}
+        std::map<std::string,std::string>::iterator itIP = m_ipsCache.find(urlToConnect);
+        if (itIP != m_ipsCache.end())
+        {
+            ipToConnect = itIP->second;
+        }
+        else
+        {
+            struct hostent *he;
+            if ((he=gethostbyname(urlToConnect.c_str())) == NULL)
+            {
+                herror("gethostbyname");
+                return false;
+            }
+            else
+            {
+                ipToConnect = he->h_addr;
+                m_ipsCache[urlToConnect] = ipToConnect;
+            } // else
+        } // else
 
-        if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
             std::cerr<<"socket not created to download '"<<inURLFileToGet<<"'"<<std::endl;
             return false;
         } else {}
 
+        struct sockaddr_in their_addr;
         their_addr.sin_family = AF_INET;  /* host byte order */
         their_addr.sin_port = htons(PORT);/* short, network byte order */
-        their_addr.sin_addr = *((struct in_addr *)he->h_addr);
+        their_addr.sin_addr = *((struct in_addr *)ipToConnect.c_str());
         bzero(&(their_addr.sin_zero), 8); /* zero pour le reste de struct */
 
         if (connect(sockfd, (struct sockaddr *)&their_addr, sizeof(struct sockaddr)) == -1)
         {
-            std::cerr<<"Connection to '"<<ipToConnect<<"' : "<<PORT<<" not possible to download '"<<inURLFileToGet<<"'"<<std::endl;
+            std::cerr<<"Connection to '"<<urlToConnect<<"' : "<<PORT<<" not possible to download '"<<inURLFileToGet<<"'"<<std::endl;
             close(sockfd);
             return false;
         } else {}
 
         retVal = getDataFile(sockfd, inURLFileToGet, outReceivedData, inWithHTTPHeader, inType, inCookie, inRequestMethod, inContent);
-
         close(sockfd);
     } else {}
 
