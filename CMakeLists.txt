@@ -23,9 +23,11 @@ add_definitions(-msse)
 add_definitions(-msse2)
 add_definitions(-msse3)
 add_definitions(-ffast-math)
+add_definitions(-DNDEBUG)
 
-SET( libvindiniumSRC CClient.cpp CClient.h CHttpTools.h CHttpTools.cpp CHero.cpp CHero.h CGame.cpp CGame.h CPosition.h CTicTac.h CTicTac.cpp )
+SET( libvindiniumSRC CClient.cpp CClient.h CHttpTools.h CHttpTools.cpp CHero.cpp CHero.h CGame.cpp CGame.h CPosition.h IBehaviorModule.h CBehaviorMgr.cpp CBehaviorMgr.h CTicTac.h CTicTac.cpp)
 add_library(vindinium SHARED ${libvindiniumSRC})
+target_link_libraries(vindinium -ldl )
 set_target_properties(vindinium PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
@@ -44,3 +46,12 @@ add_executable(botMitch botMitch/CMyBotClient.h botMitch/CMyBotClient.cpp botMit
 target_link_libraries(botMitch vindinium )
 set_target_properties(botMitch PROPERTIES
          RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+################################################################################
+### Behavior modules
+
+SET( moduleRandomSRC CRandomBehaviorModule.cpp CRandomBehaviorModule.h IBehaviorModule.h )
+add_library(random SHARED ${moduleRandomSRC})
+target_link_libraries( random vindinium )
+set_target_properties(random PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)

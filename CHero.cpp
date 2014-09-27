@@ -9,7 +9,7 @@
 /// Local includes
 #include "CHero.h"
 
-namespace VDC
+namespace BEEN
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,4 +75,4 @@ void CHero::print()
     std::cout<<"IsCrashed"<<((m_isCrashed)? "true":"false")<<std::endl;
 } // print
 
-} // namespace VDC
+} // namespace BEEN

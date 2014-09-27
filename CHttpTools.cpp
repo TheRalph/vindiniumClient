@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "CHttpTools.h"
 
-namespace VDC
+namespace BEEN
 {
 
 const int SOCKET_ERROR = -1,     ///< the socket error code
@@ -253,4 +253,4 @@ std::string CHttpTools::getIpFromHostName(const std::string& inHostName)
     return ipStr;
 } // getIpFromHostName
 
-} // namespace VDC
+} // namespace BEEN

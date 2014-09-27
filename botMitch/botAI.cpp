@@ -31,13 +31,13 @@ int main(int inArgC, char** inpArgV)
     }
     else
     {
-        VDC::CMyBotClient vdcClient(inpArgV[1]);
+        BEEN::CMyBotClient vdcClient(inpArgV[1]);
         if (inArgC==3)
         {
             vdcClient.setNavigator(inpArgV[2]);
         } else {}
 
-        if (!vdcClient.startGame(VDC::E_VINDINIUM_TRAINING_MODE))
+        if (!vdcClient.startGame(BEEN::E_VINDINIUM_TRAINING_MODE))
         {
             std::cerr<<"Can not start game in Trainig mode with key '"<<vdcClient.getKey()<<"' on server '"<<vdcClient.getServerHostName()<<"'"<<std::endl;
         }

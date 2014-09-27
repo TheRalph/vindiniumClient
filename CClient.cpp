@@ -18,7 +18,7 @@
 
 #define PROFILE_TIME 0
 
-namespace VDC
+namespace BEEN
 {
 
 static const std::string G_SUBURL_PER_MODE[NB_VINDINIUM_MODE]={
@@ -75,9 +75,9 @@ std::string CClient::getKey() const
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_VINDINIUM_ACTIONS CClient::playAI(const CGame& /*inGame*/)
+E_GAME_ACTIONS CClient::playAI(const CGame& /*inGame*/)
 {
-    return (E_VINDINIUM_ACTIONS)(rand()%NB_VINDINIUM_ACTIONS);
+    return (E_GAME_ACTIONS)(rand()%NB_VINDINIUM_ACTIONS);
 } // playAI
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
 
             while (!currentGame.isFinished())
             {
-                E_VINDINIUM_ACTIONS newDirection = playAI(currentGame);
+                E_GAME_ACTIONS newDirection = playAI(currentGame);
 {
 #if (PROFILE_TIME == 1)
 common::CTicTac toc("http");
@@ -194,4 +194,4 @@ common::CTicTac toc("update");
     return retVal;
 } // startGame
 
-} // namespace VDC
+} // namespace BEEN

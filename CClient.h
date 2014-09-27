@@ -9,17 +9,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// Local includes
 #include "CHttpTools.h"
+#include "CGame.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
-namespace VDC
+namespace BEEN
 {
-    class CGame;
     class CHero;
-} // namespace VDC
+} // namespace BEEN
 
-namespace VDC
+namespace BEEN
 {
 
 
@@ -37,27 +37,6 @@ static const std::string G_VINDINIUM_MODE_DICTIONARY[NB_VINDINIUM_MODE]={
     "Vindinium training mode",
     "Vindinium arena mode"
 }; ///< Dictionary of Vindinium modes
-
-/**
- * @brief Vindinium managed directions
- */
-enum E_VINDINIUM_ACTIONS
-{
-    E_VINDINIUM_STAY = 0, ///< Stay here
-    E_VINDINIUM_NORTH,    ///< Go to the North
-    E_VINDINIUM_SOUTH,    ///< Go to the South
-    E_VINDINIUM_EAST,     ///< Go to the East
-    E_VINDINIUM_WEST,     ///< Go to the West
-    NB_VINDINIUM_ACTIONS  ///< number of managed actions
-}; // enum E_VINDINIUM_ACTIONS
-
-static const std::string G_VINDINIUM_ACTIONS_DICTIONARY[NB_VINDINIUM_ACTIONS]={
-    "Stay",
-    "North",
-    "South",
-    "East",
-    "West"
-}; ///< Dictionary of Vindinium actions
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +97,7 @@ class CClient
         * The default behavior is random!
         * This function must be overloaded with the needed AI
         */
-        virtual E_VINDINIUM_ACTIONS playAI(const CGame& inGame);
+        virtual E_GAME_ACTIONS playAI(const CGame& inGame);
 
     protected:
         /**
@@ -136,4 +115,4 @@ class CClient
         std::string m_navigator;
 }; // class CVindiniumClient
 
-} // namespace VDC
+} // namespace BEEN

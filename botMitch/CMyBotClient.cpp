@@ -17,14 +17,14 @@
 
 #define PROFILE_TIME 1
 
-namespace VDC
+namespace BEEN
 {
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_VINDINIUM_ACTIONS CMyBotClient::playAI(const CGame& /*inGame*/)
+E_GAME_ACTIONS CMyBotClient::playAI(const CGame& /*inGame*/)
 {
-    return (E_VINDINIUM_ACTIONS)(3);//rand()%NB_VINDINIUM_ACTIONS);
+    return (E_GAME_ACTIONS)(3);//rand()%NB_VINDINIUM_ACTIONS);
 } // playAI
 
-} // namespace VDC
+} // namespace BEEN
