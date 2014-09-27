@@ -40,11 +40,7 @@ CClient::CClient(const std::string& inVindiniumKey, const std::string& inVindini
     srand(time(NULL)); // init random
 
     /// load behaviors
-    int nbLoadedModules = m_behaviorMgr.loadBehaviorModuleFolder("./behaviorModules");
-    if (nbLoadedModules == 0)
-    {
-        nbLoadedModules = m_behaviorMgr.loadBehaviorModuleFolder("../behaviorModules");
-    } else {}
+    int nbLoadedModules = m_behaviorMgr.loadBehaviorModules();
     std::cout<<"Nb available behavior: "<<nbLoadedModules<<std::endl;
 
     if (!inBehaviorName.empty())

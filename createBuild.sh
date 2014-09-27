@@ -22,12 +22,17 @@ fi
 
 rm -rf build
 mkdir -p build
-echo "#!/bin/bash" > build/testIA.sh
-echo "../bin/vindiniumLauncher $vindinium_key random $navigator" >> build/testIA.sh
-chmod +x build/testIA.sh
-echo "#!/bin/bash" > build/michIA.sh
-echo "../bin/vindiniumLauncher $vindinium_key botMitch $navigator" >> build/mitchIA.sh
-chmod +x build/mitchIA.sh
 cd build
+
+echo "#!/bin/bash" > testIA.sh
+echo "../bin/vindiniumLauncher $vindinium_key random $navigator" >> testIA.sh
+chmod +x testIA.sh
+
+echo "#!/bin/bash" > mitchIA.sh
+echo "../bin/vindiniumLauncher $vindinium_key botMitch $navigator" >> mitchIA.sh
+chmod +x mitchIA.sh
+
+ln -s ../bin/vindiniumLauncher vindiniumLauncher
+
 cmake ..
 cd ..

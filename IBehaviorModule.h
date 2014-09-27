@@ -51,6 +51,7 @@ class IBehaviorModule
         */
         IBehaviorModule() : m_version(0),
                             m_name(""),
+                            m_comment(""),
                             m_pHandle(NULL),
                             m_pBehaviorMgr(NULL) {}
 
@@ -82,6 +83,12 @@ class IBehaviorModule
         inline void *getHandle() const { return m_pHandle; }
 
         /**
+        * @brief return the comment of the current behavior
+        * @return the comment of the current behavior
+        */
+        inline const std::string& getComment() const { return m_comment; }
+
+        /**
         * @brief set the handle of the loaded module
         * @param inpHandle the handle to set with
         */
@@ -102,6 +109,7 @@ class IBehaviorModule
     protected:
         int m_version;       ///< the version of the module api
         std::string m_name;  ///< the name of the mmodule
+        std::string m_comment; ///< a comment about the behavior
         void *m_pHandle;     ///< the Handle of the loaded module
         CBehaviorMgr *m_pBehaviorMgr; ///< the behavior manager to use other behavior. WARNING: loop of death can appear if 2 behaviors call each other!
 }; // class IBehaviorModule

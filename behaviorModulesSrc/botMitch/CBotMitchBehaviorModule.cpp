@@ -21,6 +21,7 @@ CBotMitchBehaviorModule::CBotMitchBehaviorModule()
 {
     m_version = 0;
     m_name    = "botMitch";
+    m_comment = "go to the east ...";
 } // Constructor
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +35,7 @@ CBotMitchBehaviorModule::~CBotMitchBehaviorModule()
 ////////////////////////////////////////////////////////////////////////////////
 E_GAME_ACTIONS CBotMitchBehaviorModule::playBehavior(const CGame& inGame)
 {
-    return (E_GAME_ACTIONS)(3);//rand()%NB_VINDINIUM_ACTIONS);
+    return E_ACTION_EAST;//(E_GAME_ACTIONS)(3);//rand()%NB_VINDINIUM_ACTIONS);
 } // playBehavior
 
 } // namespace BEEN

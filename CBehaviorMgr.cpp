@@ -69,6 +69,23 @@ void CBehaviorMgr::clearBehaviors()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+int CBehaviorMgr::loadBehaviorModules(bool inUnloadExistingModules)
+{
+    if (inUnloadExistingModules)
+    {
+        clearBehaviors();
+    } else {}
+
+    int nbLoadedModules = 0;
+    for (const std::string &behaviorsPath : G_MODULES_PATH_LIST)
+    {
+        nbLoadedModules += loadBehaviorModuleFolder(behaviorsPath);
+    } // for
+    return nbLoadedModules;
+} // loadBehaviorModules
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 bool CBehaviorMgr::loadBehaviorModule(const std::string& inBehaviorModulePath)
 {
     bool moduleLoaded = false;
@@ -190,5 +207,12 @@ IBehaviorModule* CBehaviorMgr::getBehavior(const std::string& inBehaviorName)
 
     return pBehavior;
 } // getBehavior
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+const behaviorsMap_t& CBehaviorMgr::getBehaviors() const
+{
+    return m_behaviors;
+} // getBehaviors
 
 } // namespace BEEN

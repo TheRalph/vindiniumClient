@@ -1,3 +1,33 @@
-Library used:
+************************
+Needed library:
 
 sudo apt-get install libjsoncpp-dev
+
+************************
+1. To make the build folder, just use ./createBuild.sh as following:
+TODO ./createBuild.sh vindinium_key [mode] [nbTurns] [map] [navigator]
+./createBuild.sh vindinium_key [navigator]
+
+'vindinium_key' is your secret key given on the web site vindinium.org.
+TODO 'mode'          is the game mode to start: ARENA or TRAINING.
+TODO 'nb_turns       is the number of turn to play. Only available for TRAINING mode.
+TODO 'map            is the map to play with. 6 maps are available: m1 m2 m3 m4 m5 m6. Only available for TRAINING mode.
+'navigator'     is the name of the navigator your want to open to didplay the game. No navigator by default.
+
+2. To compile the project:
+cd build
+make
+
+3. To use:
+cd build
+TODO ./vindiniumLauncher vindinium_key behavior_name [mode] [nbTurns] [map] [navigator]
+./vindiniumLauncher vindinium_key behavior_name [navigator]
+
+'vindinium_key' is your secret key given on the web site vindinium.org.
+'behavior_name' is the name of the behavior module you want to activate for this game.
+TODO 'mode'          is the game mode to start: ARENA or TRAINING.
+TODO 'nb_turns       is the number of turn to play. Only available for TRAINING mode.
+TODO 'map            is the map to play with. 6 maps are available: m1 m2 m3 m4 m5 m6. Only available for TRAINING mode.
+'navigator'     is the name of the navigator your want to open to didplay the game. No navigator by default.
+
+To know all the behavior_name available, use './vindiniumLauncher --help'

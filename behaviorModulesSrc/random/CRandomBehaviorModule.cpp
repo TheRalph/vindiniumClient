@@ -21,6 +21,7 @@ CRandomBehaviorModule::CRandomBehaviorModule()
 {
     m_version = 0;
     m_name    = "random";
+    m_comment = "a random displacement behavior.",
 
     srand(time(NULL)); // init random
 } // Constructor
