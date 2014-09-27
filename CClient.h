@@ -10,6 +10,7 @@
 /// Local includes
 #include "CHttpTools.h"
 #include "CGame.h"
+#include "CBehaviorMgr.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,9 +51,10 @@ class CClient
         * @brief Constructor of Vindinium client
         * @param inVindiniumKey the key to be connected to the web server
         * @param inVindiniumUrl the Vindinium web server url to be used
+        * @param inBehaviorName the name of the behavior to use
         * @param inNavigator the navigator to start on start game. By default no navigator is started
         */
-        CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org", const std::string& inNavigator = "");
+        CClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org", const std::string& inBehaviorName = "random", const std::string& inNavigator = "");
 
         /**
         * @brief Destructor of Vindinium client
@@ -64,6 +66,12 @@ class CClient
         * @param inNavigator the navigator to start on start game. By default no navigator is started
         */
         void setNavigator(const std::string& inNavigator);
+
+        /**
+        * @brief Set the current active behavior to use
+        * @param inBehaviorName the name of the behavior to use
+        */
+        void setActiveBehavior(const std::string& inBehaviorName);
 
         /**
         * @brief Return the Ip of the current server
@@ -113,6 +121,8 @@ class CClient
         std::string m_svrHostName;
         std::string m_svrIp;
         std::string m_navigator;
+        CBehaviorMgr m_behaviorMgr;
+        IBehaviorModule *m_pActiveBehavior;
 }; // class CVindiniumClient
 
 } // namespace BEEN

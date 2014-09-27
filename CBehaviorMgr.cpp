@@ -18,6 +18,13 @@ namespace BEEN
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+CBehaviorMgr::CBehaviorMgr()
+{
+    // nothing
+} // Constructor
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 CBehaviorMgr::CBehaviorMgr(const std::string& inBehaviorModulesFolder)
 {
     const int nbLoadedModules = loadBehaviorModuleFolder(inBehaviorModulesFolder);
@@ -42,7 +49,19 @@ void CBehaviorMgr::clearBehaviors()
         {
             void *pHandle = pBehavior->getHandle();
             destroy_t* destroyBehavior = (destroy_t*)dlsym(pHandle,"destroyBehavior");
-            destroyBehavior(pBehavior);
+            if (!destroyBehavior)
+            {
+                std::cerr<<"Can not find destroy function from '"<<pBehavior->getName()<<"': "<<dlerror()<<std::endl;
+            }
+            else
+            {
+                void *pHandle = pBehavior->getHandle();
+                destroyBehavior(pBehavior);
+                if (pHandle)
+                {
+                    ::dlclose(pHandle);
+                } else {}
+            } // else
         } else {}
     } // for
     m_behaviors.clear();
@@ -69,7 +88,6 @@ bool CBehaviorMgr::loadBehaviorModule(const std::string& inBehaviorModulePath)
         {
             create_t* createBehavior = (create_t*)dlsym(pHandle,"createBehavior");
 
-
             if (!createBehavior)
             {
                 std::cerr<<"Can not find symbol 'createBehavior' on loaded module '"<<inBehaviorModulePath<<"': "<<dlerror()<<std::endl;
@@ -77,7 +95,7 @@ bool CBehaviorMgr::loadBehaviorModule(const std::string& inBehaviorModulePath)
             else
             {
                 IBehaviorModule *pBehavior = createBehavior();
-                if (pBehavior)
+                if (!pBehavior)
                 {
                     std::cerr<<"Can not create behavior module from '"<<inBehaviorModulePath<<"': "<<dlerror()<<std::endl;
                 }
@@ -111,11 +129,7 @@ int CBehaviorMgr::loadBehaviorModuleFolder(const std::string& inBehaviorModuleFo
     {
         DIR *pDir = ::opendir(inBehaviorModuleFolder.c_str());
 
-        if (!pDir)
-        {
-            std::cerr<<"The given folder '"<<inBehaviorModuleFolder<<"' can not be opened"<<std::endl;
-        }
-        else
+        if (pDir)
         {
             if (inUnloadExistingModules)
             {
@@ -142,11 +156,11 @@ int CBehaviorMgr::loadBehaviorModuleFolder(const std::string& inBehaviorModuleFo
                 const std::string extension(pExt? pExt:"");
                 if (extension == "so")
                 {
-                    soFilesList.push_back(currentFileName);
+                    soFilesList.push_back(inBehaviorModuleFolder+"/"+currentFileName);
                 } else {}
             } // while
             closedir(pDir);
-        } // else
+        } else {}
 
         if (!soFilesList.empty())
         {
@@ -162,5 +176,19 @@ int CBehaviorMgr::loadBehaviorModuleFolder(const std::string& inBehaviorModuleFo
 
     return nbLoadedModules;
 } // loadBehaviorModuleFolder
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+IBehaviorModule* CBehaviorMgr::getBehavior(const std::string& inBehaviorName)
+{
+    IBehaviorModule* pBehavior = NULL;
+    auto behaviorIt = m_behaviors.find(inBehaviorName);
+    if (behaviorIt != m_behaviors.end())
+    {
+        pBehavior = behaviorIt->second;
+    } else {}
+
+    return pBehavior;
+} // getBehavior
 
 } // namespace BEEN

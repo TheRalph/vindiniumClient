@@ -3,6 +3,7 @@
 /// Global includes
 #include <stdlib.h>
 #include <time.h>
+#include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +21,6 @@ CRandomBehaviorModule::CRandomBehaviorModule()
 {
     m_version = 0;
     m_name    = "random";
-    m_pHandle = NULL;
 
     srand(time(NULL)); // init random
 } // Constructor

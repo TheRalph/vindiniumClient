@@ -5,7 +5,8 @@
 /// Global includes
 #include <string>
 #include <vector>
-#include <dlfcn.h>                                                            \
+#include <dlfcn.h>
+#include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,12 +30,6 @@ extern "C" void destroyBehavior(inBehaviorModuleClassName* pinBehaviorModule) \
 {                                                                             \
     if (pinBehaviorModule)                                                    \
     {                                                                         \
-        void* pHandle = pinBehaviorModule->getHandle();                       \
-        if (pHandle)                                                          \
-        {                                                                     \
-            ::dlclose(pHandle);                                               \
-            pinBehaviorModule->setHandle(NULL);                               \
-        } else {}                                                             \
         delete pinBehaviorModule;                                             \
     } else {}                                                                 \
 }
@@ -50,6 +45,20 @@ namespace BEEN
 class IBehaviorModule
 {
     public:
+
+        /**
+        * @brief Constructor by default
+        */
+        IBehaviorModule() : m_version(0),
+                            m_name(""),
+                            m_pHandle(NULL),
+                            m_pBehaviorMgr(NULL) {}
+
+        /**
+        * @brief Destructor
+        */
+        virtual ~IBehaviorModule() {}
+
         /**
         * @brief Compute the next action according to the current Game status
         * @param inGame the current Game

@@ -3,22 +3,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Global includes
-#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Local includes
-#include "../CHttpTools.h"
-#include "../CClient.h"
+#include "IBehaviorModule.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
-namespace BEEN
-{
-    class CGame;
-    class CHero;
-} // namespace BEEN
 
 namespace BEEN
 {
@@ -26,33 +19,32 @@ namespace BEEN
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /**
- * @brief Client for web game 'Vindinium' (http://vindinium.org/)
+ * @brief Random Behavior module class for BEhavior ENgine
  */
-class CMyBotClient : public CClient
+class CBotMitchBehaviorModule : public IBehaviorModule
 {
     public:
-        /**
-        * @brief Constructor of Vindinium client
-        * @param inVindiniumKey the key to be connected to the web server
-        * @param inVindiniumUrl the Vindinium web server url to be used
-        */
-        CMyBotClient(const std::string& inVindiniumKey, const std::string& inVindiniumUrl = "vindinium.org") : CClient(inVindiniumKey, inVindiniumUrl) {}
 
         /**
-        * @brief Destructor of Vindinium client
+        * @brief Constructor by default
         */
-        virtual ~CMyBotClient(){}
+        CBotMitchBehaviorModule();
 
         /**
-        * @brief Compute the next move according to the current Game status
+        * @brief Destructor
+        */
+        virtual ~CBotMitchBehaviorModule();
+
+        /**
+        * @brief Compute the next action according to the current Game status
         * @param inGame the current Game
         * @return the action to do
         * 
         * The default behavior is random!
-        * This function must be overloaded with the needed AI
+        * This function must be overloaded with the needed behavior
         */
-        virtual E_GAME_ACTIONS playAI(const CGame& inGame);
+        E_GAME_ACTIONS playBehavior(const CGame& inGame);
 
-}; // class CVindiniumClient
+}; // class CBotMitchBehaviorModule
 
 } // namespace BEEN

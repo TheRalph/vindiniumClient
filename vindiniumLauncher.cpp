@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Local includes
-#include "CMyBotClient.h"
+#include "CClient.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,25 +18,35 @@ void displaySyntax(const std::string& inExeName)
     {
         exeName = inExeName.substr(idOfPoint+1);
     } else {}
-    std::cout<<"Syntax: "<<exeName<<" vindinium_key [navigator]"<<std::endl;
+    std::cout<<"Syntax: "<<exeName<<" vindinium_key behavior_name [navigator]"<<std::endl;
 } // displaySyntax
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 int main(int inArgC, char** inpArgV)
 {
-    if (inArgC < 2 && inArgC > 3)
+    if (inArgC < 2 && inArgC > 4)
     {
         displaySyntax(inpArgV[0]);
     }
     else
     {
-        BEEN::CMyBotClient vdcClient(inpArgV[1]);
-        if (inArgC==3)
+        std::string vindiniumKey(inpArgV[1]),
+                    vindiniumURL("vindinium.org"),
+                    activeBehavior(""),
+                    navigator("");
+
+        if (inArgC >= 3)
         {
-            vdcClient.setNavigator(inpArgV[2]);
+            activeBehavior=inpArgV[2];
         } else {}
 
+        if (inArgC >= 4)
+        {
+            navigator=inpArgV[3];
+        } else {}
+
+        BEEN::CClient vdcClient(vindiniumKey, vindiniumURL, activeBehavior, navigator);
         if (!vdcClient.startGame(BEEN::E_VINDINIUM_TRAINING_MODE))
         {
             std::cerr<<"Can not start game in Trainig mode with key '"<<vdcClient.getKey()<<"' on server '"<<vdcClient.getServerHostName()<<"'"<<std::endl;

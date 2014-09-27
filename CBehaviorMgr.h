@@ -30,6 +30,11 @@ class CBehaviorMgr
 {
     public:
         /**
+        * @brief Constructor by default of CBehaviorMgr
+        */
+        CBehaviorMgr();
+
+        /**
         * @brief Constructor of CBehaviorMgr
         */
         CBehaviorMgr(const std::string& inBehaviorModulesFolder);
@@ -43,6 +48,13 @@ class CBehaviorMgr
         * @brief Clear the current behavior list
         */
         void clearBehaviors();
+
+        /**
+        * @brief Get behavior from its name
+        * @param inBehaviorName the behavior name to load
+        * @return return a behavior from the given name. If the brhavior is not found, NULL is returned.
+        */
+        IBehaviorModule* getBehavior(const std::string& inBehaviorName);
 
         /**
         * @brief Load a behavior module
