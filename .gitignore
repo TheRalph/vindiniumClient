@@ -6,3 +6,4 @@ bin/
 lib/
 *.kdev4
 *.pb.*
+behaviorModules/
