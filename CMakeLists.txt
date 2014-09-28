@@ -45,8 +45,7 @@ SET( libmobeSRC
     ${libmobeFolderSrc}/IBehaviorModule.h
     ${libmobeFolderSrc}/CBehaviorMgr.cpp
     ${libmobeFolderSrc}/CBehaviorMgr.h
-    ${libmobeFolderSrc}/CTicTac.h
-    ${libmobeFolderSrc}/CTicTac.cpp
+    ${libmobeFolderSrc}/CDuration.h
 )
 add_library(mobe SHARED ${libmobeSRC})
 target_link_libraries(mobe -ldl )

@@ -2,10 +2,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// Global includes
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
-#include <sstream>
 #include <json/json.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,10 +15,8 @@
 #include "CClient.h"
 #include "CGame.h"
 #include "CHero.h"
-#include "CTicTac.h"
 #include "IBehaviorModule.h"
-
-#define PROFILE_TIME 0
+#include "CDuration.h"
 
 namespace MOBE
 {
@@ -138,13 +137,13 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
 
         std::string jsonResult;
         if (!m_httpTools.getDataFile( fullUrl,     // the url to use
-                                    jsonResult,  // the result
-                                    false,       // no http header
-                                    "application/x-www-form-urlencoded", // the mime format
-                                    "",          // no cookie
-                                    "POST",      // the request method
-                                    sstr.str()   // the vindinum play configuration
-                                    ))
+                                      jsonResult,  // the result
+                                      false,       // no http header
+                                      "application/x-www-form-urlencoded", // the mime format
+                                      "",          // no cookie
+                                      "POST",      // the request method
+                                      sstr.str()   // the vindinum play configuration
+                                     ))
         {
             std::cerr<<"Can not connect to '"<<fullUrl<<"'"<<std::endl;
         }
@@ -184,31 +183,41 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
 
                 while (!currentGame.isFinished())
                 {
-                    E_BEHAVIOR_ACTIONS newDirection = m_pActiveBehavior->playBehavior(currentGame);
-{
-#if (PROFILE_TIME == 1)
-common::CTicTac toc("http");
-#endif
-                    m_httpTools.getDataFile( playUrlForRequest, // the url to use
-                                            jsonResult,  // the result
-                                            false,       // no http header
-                                            "application/x-www-form-urlencoded", // the mime format
-                                            "",          // no cookie
-                                            "POST",      // the request method
-                                            "key="+m_key+"&dir="+G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
-                                        );
-}
+                    E_BEHAVIOR_ACTIONS newDirection = E_ACTION_STAY;
+                    float behaviorTimeMs = 0;
+                    {
+                        CDuration duration("Behavior", behaviorTimeMs);
 
-                    jsonReader.parse(jsonResult, jsonValues);
+                        newDirection = m_pActiveBehavior->playBehavior(currentGame);
+                    } // end behavior computation
 
-{
-#if (PROFILE_TIME == 1)
-common::CTicTac toc("update");
-#endif
-                    currentGame.update(jsonValues["game"]); // hero update is done in game
-}
+                    float waitingForServerInMs = 0;
+                    {
+                        CDuration duration("waitingForServer", waitingForServerInMs);
 
-                    std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % )"<<'\r';
+                        m_httpTools.getDataFile( playUrlForRequest, // the url to use
+                                                 jsonResult,  // the result
+                                                 false,       // no http header
+                                                 "application/x-www-form-urlencoded", // the mime format
+                                                 "",          // no cookie
+                                                 "POST",      // the request method
+                                                 "key="+m_key+"&dir="+G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
+                                               );
+                    } // end waiting for request
+
+                    float processDataInMs = 0;
+                    {
+                        CDuration duration("processData", processDataInMs);
+
+                        jsonReader.parse(jsonResult, jsonValues);
+                        currentGame.update(jsonValues["game"]); // hero update is done in game
+                    } // end data processing
+
+                    std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
+                    std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+                    std::cout<<std::setprecision(3)<<"Process data="<<processDataInMs<<" ms, Behavior="<<behaviorTimeMs<<" ms, ";
+                    std::cout<<std::setprecision(3)<<"Total client time="<<processDataInMs+behaviorTimeMs<<" ms, ";
+                    std::cout<<std::setprecision(3)<<"Waiting for server="<<waitingForServerInMs<<" ms         \r";
                     std::cout.flush();
                 } // while
                 retVal = currentGame.isFinished();

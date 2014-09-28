@@ -11,7 +11,6 @@
 /// Local includes
 #include "CGame.h"
 #include "CHero.h"
-#include "CTicTac.h"
 
 namespace MOBE
 {

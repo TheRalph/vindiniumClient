@@ -38,10 +38,10 @@ enum E_BEHAVIOR_ACTIONS
 
 static const std::string G_BEHAVIOR_ACTIONS_DICTIONARY[NB_BEHAVIOR_ACTIONS]={
     "Stay",
-    "Move North",
-    "Move South",
-    "Move East",
-    "Move West"
+    "North",
+    "South",
+    "East",
+    "West"
 }; ///< Dictionary of behaviors actions
 
 /**
