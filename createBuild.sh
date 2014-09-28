@@ -32,6 +32,10 @@ echo "#!/bin/bash" > mitchIA.sh
 echo "../bin/vindiniumLauncher $vindinium_key botMitch $navigator" >> mitchIA.sh
 chmod +x mitchIA.sh
 
+echo "#!/bin/bash" > aggressiveIA.sh
+echo "../bin/vindiniumLauncher $vindinium_key aggressive $navigator" >> aggressiveIA.sh
+chmod +x aggressiveIA.sh
+
 ln -s ../bin/vindiniumLauncher vindiniumLauncher
 
 cmake ..

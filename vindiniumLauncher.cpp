@@ -52,7 +52,6 @@ void displayHelp(const std::string& inExeName)
 int main(int inArgC, char** inpArgV)
 {
     std::string exeName(inpArgV[0]);
-    std::cout<<__LINE__<<std::endl;
     if (inArgC < 2 || inArgC > 4)
     {
         displayHelp(exeName);
@@ -64,7 +63,7 @@ int main(int inArgC, char** inpArgV)
                     vindiniumURL("vindinium.org"),
                     activeBehavior(""),
                     navigator(""),
-                    gameMap("");
+                    gameMap("m1");
         MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_TRAINING_MODE;
 
         if (vindiniumKey == "--help")

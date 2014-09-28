@@ -7,6 +7,18 @@ macro( config_project PROJNAME LIBNAME )
     target_link_libraries( ${PROJNAME} ${${LIBNAME}_LIBRARIES} ${${LIBNAME}_LIBS} )
 endmacro()
 
+macro( add_behavior_module BEHAVIOR_MODULE_NAME BEHAVIOR_MODULE_SRC_NAME )
+    SET( moduleSRC 
+        ${behaviorModulesFolderSrc}/${BEHAVIOR_MODULE_NAME}/${BEHAVIOR_MODULE_SRC_NAME}.cpp
+        ${behaviorModulesFolderSrc}/${BEHAVIOR_MODULE_NAME}/${BEHAVIOR_MODULE_SRC_NAME}.h
+        ${libmobeFolderSrc}/IBehaviorModule.h
+    )
+    add_library(${BEHAVIOR_MODULE_NAME} SHARED ${moduleSRC})
+    target_link_libraries( ${BEHAVIOR_MODULE_NAME} mobe )
+    set_target_properties(${BEHAVIOR_MODULE_NAME} PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)
+endmacro()
+
 find_package(PkgConfig REQUIRED)
 macro( config_project_by_pkgconfig PROJNAME LIBNAME )
     pkg_check_modules(PKG_${LIBNAME} ${LIBNAME})
@@ -66,23 +78,10 @@ set_target_properties(vindiniumLauncher PROPERTIES
 ### Behavior modules
 
 ### random behavior
-SET( moduleRandomSRC 
-    ${behaviorModulesFolderSrc}/random/CRandomBehaviorModule.cpp
-    ${behaviorModulesFolderSrc}/random/CRandomBehaviorModule.h
-    ${libmobeFolderSrc}/IBehaviorModule.h
-)
-add_library(random SHARED ${moduleRandomSRC})
-target_link_libraries( random mobe )
-set_target_properties(random PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)
+add_behavior_module( random CRandomBehaviorModule )
+
+### aggressive behavior
+add_behavior_module( aggressive CAggressiveBehaviorModule )
 
 ### Mitch behavior (botMitch)
-SET( moduleBotMitchSRC
-    ${behaviorModulesFolderSrc}/botMitch/CBotMitchBehaviorModule.cpp
-    ${behaviorModulesFolderSrc}/botMitch/CBotMitchBehaviorModule.h
-    ${libmobeFolderSrc}/IBehaviorModule.h
-)
-add_library(botMitch SHARED ${moduleBotMitchSRC})
-target_link_libraries( botMitch mobe )
-set_target_properties(botMitch PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)
+add_behavior_module( botMitch CBotMitchBehaviorModule )

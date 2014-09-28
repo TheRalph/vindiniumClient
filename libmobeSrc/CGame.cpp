@@ -3,8 +3,9 @@
 /// Global includes
 #include <iostream>
 #include <iomanip>
-#include <list>
+#include <limits>
 #include <json/json.h>
+#include <list>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,11 +33,17 @@ CGame::CGame(const Json::Value& inJsonValues, const int inMyHeroId)
     m_turn = inJsonValues["turn"].asInt();
     m_maxTurns = inJsonValues["maxTurns"].asInt();
 
+    m_opponentHeroIds.reserve(G_NUMBER_OF_PLAYERS-1);
     m_heros.reserve(G_NUMBER_OF_PLAYERS);
     for (auto &hero : inJsonValues["heroes"])
     {
         m_heros.emplace_back(hero);
         m_nbPlayers++;
+        const CHero &currentHero = m_heros.back();
+        if (currentHero.getId() != m_myHeroId)
+        {
+            m_opponentHeroIds.push_back(currentHero.getId());
+        } else {}
     } // for
 
     if (m_nbPlayers != G_NUMBER_OF_PLAYERS)
@@ -188,30 +195,61 @@ void CGame::updateCurrentBoard()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-int CGame::getDistanceTo(const CPosition& inPosition)
+bool CGame::getSmallerNeighborValueInDistanceMap(const int inCellId, int &outBestDist, int &outBestDistCellId) const
+{
+    const CPosition cellPos = get2DCoordOnBoard(inCellId);
+    return getSmallerNeighborValueInDistanceMap(cellPos, outBestDist, outBestDistCellId);
+} // getSmallerNeighborValueInDistanceMap
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+bool CGame::getSmallerNeighborValueInDistanceMap(const CPosition& inPosition, int &outBestDist, int &outBestDistCellId) const
+{
+    outBestDist = std::numeric_limits<int>::max();
+    outBestDistCellId = -1;
+    const int nbCellsInBoard = m_currentBoard.size();
+    const std::vector<CPosition> the4Connecteds = inPosition.get4Connected();
+    for (const CPosition& neighborPos : the4Connecteds)
+    {
+        const int neighborId = get1DCoordOnBoard(neighborPos);
+        if (neighborId >= 0 && neighborId < nbCellsInBoard) 
+        {
+            const int neighborDist = m_boardDistances.at(neighborId);
+
+            if (neighborDist >= 0 && neighborDist < outBestDist)
+            {
+                outBestDist = neighborDist;
+                outBestDistCellId = neighborId;
+            } else {}
+        } else {}
+    } // for
+    return (outBestDistCellId >= 0);
+} // getSmallerNeighborValueInDistanceMap
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+int CGame::getDistanceTo(const CPosition& inPosition) const
 {
     const int cellId = get1DCoordOnBoard(inPosition);
-    int distance = m_boardDistances.at(cellId);
+    return getDistanceTo(cellId);
+} // getDistanceTo
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+int CGame::getDistanceTo(const int inCellId) const
+{
+    int distance = m_boardDistances.at(inCellId);
 
     /// check if it is an hero, a mine or a tavern
     if (distance < 0)
     {
-        const E_BOARD_OBJECTS object = m_currentBoard.at(cellId);
+        const E_BOARD_OBJECTS object = m_currentBoard.at(inCellId);
         if (object != E_IMPASSABLE_WOOD)
         {
-            const std::vector<CPosition> the4Connecteds = inPosition.get4Connected();
-            int bestDist = m_boardEdgeSize*2;
-            for (const CPosition& neighbor : the4Connecteds)
-            {
-                const int neighborId = get1DCoordOnBoard(neighbor);
-                const int neighborDist = m_boardDistances.at(neighborId);
-                if (neighborDist >= 0 && neighborDist < bestDist)
-                {
-                    bestDist = neighborDist;
-                } else {}
-            } // for
-            // if a neighbor can be reached, update the distance
-            if (bestDist < m_boardEdgeSize*2)
+            int bestDist = 0;
+            int bestDistCellId = 0;
+             // if a neighbor can be reached, update the distance by 1 to reach it !
+            if (getSmallerNeighborValueInDistanceMap(inCellId, bestDist, bestDistCellId))
             {
                 distance = 1 + bestDist;
             } else {}
@@ -220,6 +258,30 @@ int CGame::getDistanceTo(const CPosition& inPosition)
 
     return distance;
 } // getDistanceTo
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+std::forward_list<int> CGame::getPathTo(const int inCellId) const
+{
+    std::forward_list<int> pathFound;
+    int cellId = inCellId;
+    int distance = getDistanceTo(cellId);
+
+    /// check if at least a path is available
+    if (distance > 0)
+    {
+        do
+        {
+            // add the current cellId
+            pathFound.emplace_front(cellId);
+
+            // the neighbor must be reachable because we know a distance exists
+            getSmallerNeighborValueInDistanceMap(cellId, distance, cellId);
+        } while (distance > 0);
+    } else {}
+
+    return pathFound;
+} // getPathTo
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

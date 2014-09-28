@@ -39,9 +39,6 @@ class CRandomBehaviorModule : public IBehaviorModule
         * @brief Compute the next action according to the current Game status
         * @param inGame the current Game
         * @return the action to do
-        * 
-        * The default behavior is random!
-        * This function must be overloaded with the needed behavior
         */
         E_BEHAVIOR_ACTIONS playBehavior(const CGame& inGame);
 

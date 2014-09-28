@@ -21,19 +21,19 @@ namespace MOBE
 /**
  * @brief Random Behavior module class for BEhavior ENgine
  */
-class CBotMitchBehaviorModule : public IBehaviorModule
+class CAggressiveBehaviorModule : public IBehaviorModule
 {
     public:
 
         /**
         * @brief Constructor by default
         */
-        CBotMitchBehaviorModule();
+        CAggressiveBehaviorModule();
 
         /**
         * @brief Destructor
         */
-        virtual ~CBotMitchBehaviorModule();
+        virtual ~CAggressiveBehaviorModule();
 
         /**
         * @brief Compute the next action according to the current Game status
@@ -42,6 +42,7 @@ class CBotMitchBehaviorModule : public IBehaviorModule
         */
         E_BEHAVIOR_ACTIONS playBehavior(const CGame& inGame);
 
-}; // class CBotMitchBehaviorModule
+    private:
+}; // class CAggressiveBehaviorModule
 
 } // namespace MOBE

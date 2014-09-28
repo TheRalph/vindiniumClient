@@ -72,15 +72,17 @@ class CPosition
         /**
         * @brief Return the 4 connected positions of the current one
         * @return the 4 connected positions of the current one
+        * 
+        * 4-connected cell order: 0,+1 # +1,0 # 0,-1 # -1,0
         */
         inline std::vector<CPosition> get4Connected() const
         {
             std::vector<CPosition> vector4Connected;
             vector4Connected.reserve(4);
-            vector4Connected.emplace_back(m_x+1, m_y);
-            vector4Connected.emplace_back(m_x-1, m_y);
             vector4Connected.emplace_back(m_x  , m_y+1);
+            vector4Connected.emplace_back(m_x+1, m_y);
             vector4Connected.emplace_back(m_x  , m_y-1);
+            vector4Connected.emplace_back(m_x-1, m_y);
             return vector4Connected;
         } // get4Connected
 
