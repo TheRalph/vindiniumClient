@@ -19,7 +19,7 @@
 
 #define PROFILE_TIME 0
 
-namespace BEEN
+namespace MOBE
 {
 
 static const std::string G_SUBURL_PER_MODE[NB_VINDINIUM_MODE]={
@@ -105,9 +105,9 @@ std::string CClient::getKey() const
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_GAME_ACTIONS CClient::playAI(const CGame& /*inGame*/)
+E_BEHAVIOR_ACTIONS CClient::playAI(const CGame& /*inGame*/)
 {
-    return (E_GAME_ACTIONS)(rand()%NB_VINDINIUM_ACTIONS);
+    return (E_BEHAVIOR_ACTIONS)(rand()%NB_BEHAVIOR_ACTIONS);
 } // playAI
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
 
                 while (!currentGame.isFinished())
                 {
-                    E_GAME_ACTIONS newDirection = m_pActiveBehavior->playBehavior(currentGame);
+                    E_BEHAVIOR_ACTIONS newDirection = m_pActiveBehavior->playBehavior(currentGame);
 {
 #if (PROFILE_TIME == 1)
 common::CTicTac toc("http");
@@ -195,7 +195,7 @@ common::CTicTac toc("http");
                                             "application/x-www-form-urlencoded", // the mime format
                                             "",          // no cookie
                                             "POST",      // the request method
-                                            "key="+m_key+"&dir="+G_VINDINIUM_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
+                                            "key="+m_key+"&dir="+G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection] // the vindinum key and direction
                                         );
 }
 
@@ -231,4 +231,4 @@ common::CTicTac toc("update");
     return retVal;
 } // startGame
 
-} // namespace BEEN
+} // namespace MOBE

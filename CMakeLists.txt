@@ -15,8 +15,6 @@ macro( config_project_by_pkgconfig PROJNAME LIBNAME )
     target_link_libraries(${PROJNAME} ${PKG_${LIBNAME}_LIBRARIES} )
 endmacro()
 
-include_directories( ${CMAKE_SOURCE_DIR} )
-
 ### g++ options
 add_definitions(-std=c++0x)
 add_definitions(-Wall)
@@ -27,21 +25,41 @@ add_definitions(-msse3)
 add_definitions(-ffast-math)
 add_definitions(-DNDEBUG)
 
+SET( libmobeFolderSrc ${CMAKE_SOURCE_DIR}/libmobeSrc )
+SET( behaviorModulesFolderSrc ${CMAKE_SOURCE_DIR}/behaviorModulesSrc )
+
+include_directories( ${libmobeFolderSrc} )
+
 ################################################################################
 ### libvindinium
-SET( libvindiniumSRC CClient.cpp CClient.h CHttpTools.h CHttpTools.cpp CHero.cpp CHero.h CGame.cpp CGame.h CPosition.h IBehaviorModule.h CBehaviorMgr.cpp CBehaviorMgr.h CTicTac.h CTicTac.cpp)
-add_library(vindinium SHARED ${libvindiniumSRC})
-target_link_libraries(vindinium -ldl )
-set_target_properties(vindinium PROPERTIES
+SET( libmobeSRC
+    ${libmobeFolderSrc}/CClient.cpp
+    ${libmobeFolderSrc}/CClient.h
+    ${libmobeFolderSrc}/CHttpTools.h
+    ${libmobeFolderSrc}/CHttpTools.cpp
+    ${libmobeFolderSrc}/CHero.cpp
+    ${libmobeFolderSrc}/CHero.h
+    ${libmobeFolderSrc}/CGame.cpp
+    ${libmobeFolderSrc}/CGame.h
+    ${libmobeFolderSrc}/CPosition.h
+    ${libmobeFolderSrc}/IBehaviorModule.h
+    ${libmobeFolderSrc}/CBehaviorMgr.cpp
+    ${libmobeFolderSrc}/CBehaviorMgr.h
+    ${libmobeFolderSrc}/CTicTac.h
+    ${libmobeFolderSrc}/CTicTac.cpp
+)
+add_library(mobe SHARED ${libmobeSRC})
+target_link_libraries(mobe -ldl )
+set_target_properties(mobe PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 #--- lib jsoncpp
-config_project_by_pkgconfig( vindinium jsoncpp )
+config_project_by_pkgconfig( mobe jsoncpp )
 
 ################################################################################
 ### vindiniumLauncher
 add_executable(vindiniumLauncher vindiniumLauncher.cpp)
-target_link_libraries( vindiniumLauncher vindinium )
+target_link_libraries( vindiniumLauncher mobe )
 set_target_properties(vindiniumLauncher PROPERTIES
          RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
@@ -49,15 +67,23 @@ set_target_properties(vindiniumLauncher PROPERTIES
 ### Behavior modules
 
 ### random behavior
-SET( moduleRandomSRC behaviorModulesSrc/random/CRandomBehaviorModule.cpp behaviorModulesSrc/random/CRandomBehaviorModule.h IBehaviorModule.h )
+SET( moduleRandomSRC 
+    ${behaviorModulesFolderSrc}/random/CRandomBehaviorModule.cpp
+    ${behaviorModulesFolderSrc}/random/CRandomBehaviorModule.h
+    ${libmobeFolderSrc}/IBehaviorModule.h
+)
 add_library(random SHARED ${moduleRandomSRC})
-target_link_libraries( random vindinium )
+target_link_libraries( random mobe )
 set_target_properties(random PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)
 
 ### Mitch behavior (botMitch)
-SET( moduleBotMitchSRC behaviorModulesSrc/botMitch/CBotMitchBehaviorModule.cpp behaviorModulesSrc/botMitch/CBotMitchBehaviorModule.h IBehaviorModule.h )
+SET( moduleBotMitchSRC
+    ${behaviorModulesFolderSrc}/botMitch/CBotMitchBehaviorModule.cpp
+    ${behaviorModulesFolderSrc}/botMitch/CBotMitchBehaviorModule.h
+    ${libmobeFolderSrc}/IBehaviorModule.h
+)
 add_library(botMitch SHARED ${moduleBotMitchSRC})
-target_link_libraries( botMitch vindinium )
+target_link_libraries( botMitch mobe )
 set_target_properties(botMitch PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/behaviorModules)

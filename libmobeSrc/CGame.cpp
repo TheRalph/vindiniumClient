@@ -13,7 +13,7 @@
 #include "CHero.h"
 #include "CTicTac.h"
 
-namespace BEEN
+namespace MOBE
 {
 
 const int G_NUMBER_OF_PLAYERS = 4;
@@ -278,4 +278,4 @@ void CGame::print()
     } // for
 } // print
 
-} // namespace BEEN
+} // namespace MOBE

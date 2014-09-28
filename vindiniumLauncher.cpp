@@ -31,15 +31,15 @@ void displayHelp(const std::string& inExeName)
 //TODO    std::cout<<"'map            is the map to play with. 6 maps are available: m1 m2 m3 m4 m5 m6. Only available for TRAINING mode."<<std::endl;
     std::cout<<"'navigator'     is the name of the navigator your want to open to didplay the game. No navigator by default."<<std::endl;
     std::cout<<std::endl;
-    BEEN::CBehaviorMgr behaviorMrg;
+    MOBE::CBehaviorMgr behaviorMrg;
     behaviorMrg.loadBehaviorModules();
-    const BEEN::behaviorsMap_t &behaviors = behaviorMrg.getBehaviors();
+    const MOBE::behaviorsMap_t &behaviors = behaviorMrg.getBehaviors();
     std::cout<<"Nb available behaviors: "<<behaviors.size()<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"behavior_name"<<"comment"<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"-------------"<<"-------"<<std::endl;
     for (auto &behaviorIt : behaviors)
     {
-        BEEN::IBehaviorModule *pBehavior = behaviorIt.second;
+        MOBE::IBehaviorModule *pBehavior = behaviorIt.second;
         std::cout<<std::setw(20)<<std::left<<pBehavior->getName()<<pBehavior->getComment()<<std::endl;
     } // for
     std::cout<<std::setw(20)<<std::left<<"-------------"<<"-------"<<std::endl;
@@ -65,7 +65,7 @@ int main(int inArgC, char** inpArgV)
                     activeBehavior(""),
                     navigator(""),
                     gameMap("");
-        BEEN::E_VINDINIUM_MODE gameMode = BEEN::E_VINDINIUM_TRAINING_MODE;
+        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_TRAINING_MODE;
 
         if (vindiniumKey == "--help")
         {
@@ -83,7 +83,7 @@ int main(int inArgC, char** inpArgV)
                 navigator=inpArgV[3];
             } else {}
 
-            BEEN::CClient vdcClient(vindiniumKey, vindiniumURL, activeBehavior, navigator);
+            MOBE::CClient vdcClient(vindiniumKey, vindiniumURL, activeBehavior, navigator);
             if (!vdcClient.startGame(gameMode, nbTurns, gameMap))
             {
                 std::cerr<<"Can not start game in Trainig mode with key '"<<vdcClient.getKey()<<"' on server '"<<vdcClient.getServerHostName()<<"'"<<std::endl;

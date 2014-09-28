@@ -15,12 +15,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
-namespace BEEN
+namespace MOBE
 {
     class CHero;
-} // namespace BEEN
+} // namespace MOBE
 
-namespace BEEN
+namespace MOBE
 {
 
 
@@ -105,7 +105,7 @@ class CClient
         * The default behavior is random!
         * This function must be overloaded with the needed AI
         */
-        virtual E_GAME_ACTIONS playAI(const CGame& inGame);
+        virtual E_BEHAVIOR_ACTIONS playAI(const CGame& inGame);
 
     protected:
         /**
@@ -125,4 +125,4 @@ class CClient
         IBehaviorModule *m_pActiveBehavior;
 }; // class CVindiniumClient
 
-} // namespace BEEN
+} // namespace MOBE

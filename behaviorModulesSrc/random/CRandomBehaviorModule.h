@@ -13,7 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
 
-namespace BEEN
+namespace MOBE
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +43,8 @@ class CRandomBehaviorModule : public IBehaviorModule
         * The default behavior is random!
         * This function must be overloaded with the needed behavior
         */
-        E_GAME_ACTIONS playBehavior(const CGame& inGame);
+        E_BEHAVIOR_ACTIONS playBehavior(const CGame& inGame);
 
 }; // class CRandomBehaviorModule
 
-} // namespace BEEN
+} // namespace MOBE

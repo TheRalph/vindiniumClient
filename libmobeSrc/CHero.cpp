@@ -9,7 +9,7 @@
 /// Local includes
 #include "CHero.h"
 
-namespace BEEN
+namespace MOBE
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,4 +75,4 @@ void CHero::print()
     std::cout<<"IsCrashed"<<((m_isCrashed)? "true":"false")<<std::endl;
 } // print
 
-} // namespace BEEN
+} // namespace MOBE

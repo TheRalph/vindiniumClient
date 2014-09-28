@@ -10,7 +10,7 @@
 /// Local includes
 #include "CRandomBehaviorModule.h"
 
-namespace BEEN
+namespace MOBE
 {
 
 CREATE_C_SYMBOLS( CRandomBehaviorModule )
@@ -35,9 +35,9 @@ CRandomBehaviorModule::~CRandomBehaviorModule()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_GAME_ACTIONS CRandomBehaviorModule::playBehavior(const CGame& inGame)
+E_BEHAVIOR_ACTIONS CRandomBehaviorModule::playBehavior(const CGame& inGame)
 {
-    return (E_GAME_ACTIONS)(rand()%NB_VINDINIUM_ACTIONS);
+    return (E_BEHAVIOR_ACTIONS)(rand()%NB_BEHAVIOR_ACTIONS);
 } // playBehavior
 
-} // namespace BEEN
+} // namespace MOBE

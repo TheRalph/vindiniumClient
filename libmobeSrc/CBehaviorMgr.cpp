@@ -13,7 +13,7 @@
 #include "CBehaviorMgr.h"
 #include "IBehaviorModule.h"
 
-namespace BEEN
+namespace MOBE
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,4 +215,4 @@ const behaviorsMap_t& CBehaviorMgr::getBehaviors() const
     return m_behaviors;
 } // getBehaviors
 
-} // namespace BEEN
+} // namespace MOBE

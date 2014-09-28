@@ -34,7 +34,7 @@ extern "C" void destroyBehavior(inBehaviorModuleClassName* pinBehaviorModule) \
     } else {}                                                                 \
 }
 
-namespace BEEN
+namespace MOBE
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ class IBehaviorModule
         * The default behavior is random!
         * This function must be overloaded with the needed behavior
         */
-        virtual E_GAME_ACTIONS playBehavior(const CGame& inGame) = 0;
+        virtual E_BEHAVIOR_ACTIONS playBehavior(const CGame& inGame) = 0;
 
         /**
         * @brief set the handle of the loaded module
@@ -114,4 +114,4 @@ class IBehaviorModule
         CBehaviorMgr *m_pBehaviorMgr; ///< the behavior manager to use other behavior. WARNING: loop of death can appear if 2 behaviors call each other!
 }; // class IBehaviorModule
 
-} // namespace BEEN
+} // namespace MOBE

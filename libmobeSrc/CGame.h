@@ -20,29 +20,29 @@ namespace Json
     class Value;
 } // namespace Json
 
-namespace BEEN
+namespace MOBE
 {
 
 /**
  * @brief Vindinium managed directions
  */
-enum E_GAME_ACTIONS
+enum E_BEHAVIOR_ACTIONS
 {
-    E_ACTION_STAY = 0, ///< Stay here
-    E_ACTION_NORTH,    ///< Go to the North
-    E_ACTION_SOUTH,    ///< Go to the South
-    E_ACTION_EAST,     ///< Go to the East
-    E_ACTION_WEST,     ///< Go to the West
-    NB_VINDINIUM_ACTIONS  ///< number of managed actions
-}; // enum E_GAME_ACTIONS
+    E_ACTION_STAY = 0,   ///< Stay here
+    E_ACTION_MOVE_NORTH, ///< Move to the North
+    E_ACTION_MOVE_SOUTH, ///< Move to the South
+    E_ACTION_MOVE_EAST,  ///< Move to the East
+    E_ACTION_MOVE_WEST,  ///< Move to the West
+    NB_BEHAVIOR_ACTIONS  ///< number of managed actions
+}; // enum E_BEHAVIOR_ACTIONS
 
-static const std::string G_VINDINIUM_ACTIONS_DICTIONARY[NB_VINDINIUM_ACTIONS]={
+static const std::string G_BEHAVIOR_ACTIONS_DICTIONARY[NB_BEHAVIOR_ACTIONS]={
     "Stay",
-    "North",
-    "South",
-    "East",
-    "West"
-}; ///< Dictionary of Vindinium actions
+    "Move North",
+    "Move South",
+    "Move East",
+    "Move West"
+}; ///< Dictionary of behaviors actions
 
 /**
  * @brief Definition of possible objects in the board
@@ -220,4 +220,4 @@ class CGame
         std::vector<E_BOARD_OBJECTS> m_currentBoard; ///< current board with other heros
 }; // class CGame
 
-} // namespace BEEN
+} // namespace MOBE

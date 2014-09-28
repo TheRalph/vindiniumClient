@@ -10,7 +10,7 @@
 /// Local includes
 #include "CBotMitchBehaviorModule.h"
 
-namespace BEEN
+namespace MOBE
 {
 
 CREATE_C_SYMBOLS( CBotMitchBehaviorModule )
@@ -33,9 +33,9 @@ CBotMitchBehaviorModule::~CBotMitchBehaviorModule()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-E_GAME_ACTIONS CBotMitchBehaviorModule::playBehavior(const CGame& inGame)
+E_BEHAVIOR_ACTIONS CBotMitchBehaviorModule::playBehavior(const CGame& inGame)
 {
-    return E_ACTION_EAST;//(E_GAME_ACTIONS)(3);//rand()%NB_VINDINIUM_ACTIONS);
+    return E_ACTION_MOVE_EAST;//(E_BEHAVIOR_ACTIONS)(3);//rand()%NB_BEHAVIOR_ACTIONS);
 } // playBehavior
 
-} // namespace BEEN
+} // namespace MOBE

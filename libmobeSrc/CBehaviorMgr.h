@@ -14,12 +14,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
-namespace BEEN
+namespace MOBE
 {
     class IBehaviorModule;
-} // namespace BEEN
+} // namespace MOBE
 
-namespace BEEN
+namespace MOBE
 {
 
 static const std::vector<std::string> G_MODULES_PATH_LIST={
@@ -97,4 +97,4 @@ class CBehaviorMgr
         behaviorsMap_t m_behaviors; ///< the list of behaviors
 }; // class CBehaviorMgr
 
-} // namespace BEEN
+} // namespace MOBE

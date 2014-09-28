@@ -18,7 +18,7 @@ namespace Json
     class Value;
 } // namespace Json
 
-namespace BEEN
+namespace MOBE
 {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,4 +124,4 @@ class CHero
         bool m_isCrashed;
 }; // class CHero
 
-} // namespace BEEN
+} // namespace MOBE

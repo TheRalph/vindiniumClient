@@ -1,7 +1,7 @@
 ************************
-Needed library:
+Needed libraries:
 
-sudo apt-get install libjsoncpp-dev
+sudo apt-get install libjsoncpp-dev libopts25-dev
 
 ************************
 1. To make the build folder, just use ./createBuild.sh as following:
