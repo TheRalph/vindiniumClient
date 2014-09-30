@@ -37,34 +37,21 @@ CAggressiveBehaviorModule::~CAggressiveBehaviorModule()
 ////////////////////////////////////////////////////////////////////////////////
 E_BEHAVIOR_ACTIONS CAggressiveBehaviorModule::playBehavior(const CGame& inGame)
 {
-    const CHero &myHero = inGame.getMyHero();
-    const std::vector<int>& opponentHeroIds = inGame.getOpponentHeroIds();
+    E_BEHAVIOR_ACTIONS nextAction = E_ACTION_STAY;
 
     int opponentIdWithMaxMineCount = -1;
     int maxMineCount = 0;
-    for (const int &opponentHeroId : opponentHeroIds)
-    {
-        const CHero& opponentHero = inGame.getHero(opponentHeroId-1);
-        const int opponentHeroMineCount = opponentHero.getMineCount();
-        if ( opponentHeroMineCount > maxMineCount)
-        {
-            maxMineCount = opponentHeroMineCount;
-            opponentIdWithMaxMineCount = opponentHeroId;
-        } else {}
-    } // for
 
-    E_BEHAVIOR_ACTIONS nextAction = E_ACTION_STAY;
-    int targetId = -1;
-    if (opponentIdWithMaxMineCount > 0)
+    if (inGame.getOpponentIdWithMaxMineCount(opponentIdWithMaxMineCount, maxMineCount))
     {
-        targetId = opponentIdWithMaxMineCount - 1;
-        const CHero &targetHero = inGame.getHero(targetId);
+        const CHero &targetHero = inGame.getHero(opponentIdWithMaxMineCount);
         const CPosition targetHeroPos(targetHero.getPosition());
         const int targetHeroCellId = inGame.get1DCoordOnBoard(targetHeroPos);
 
-        std::forward_list<int> targetHeroPath = inGame.getPathTo(targetHeroCellId);
-        if (!targetHeroPath.empty())
+        path_t targetHeroPath;
+        if (inGame.getPathTo(targetHeroCellId, targetHeroPath))
         {
+            const CHero &myHero = inGame.getMyHero();
             const CPosition nextPosition(inGame.get2DCoordOnBoard(*targetHeroPath.cbegin()));
             int deltaX = nextPosition.getX() - myHero.getPosition().getX();
             int deltaY = nextPosition.getY() - myHero.getPosition().getY();

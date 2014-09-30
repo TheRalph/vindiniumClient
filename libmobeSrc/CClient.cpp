@@ -225,14 +225,14 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
                 int idMax = 0;
                 for (int i = 0; i < currentGame.getNbPlayers(); i++)
                 {
-                    const CHero& hero = currentGame.getHero(i);
+                    const CHero& hero = currentGame.getHero(i+1);
                     std::cout<<hero.getName()<<": "<<hero.getGold()<<std::endl;
-                    if (hero.getGold() > currentGame.getHero(idMax).getGold())
+                    if (hero.getGold() > currentGame.getHero(idMax+1).getGold())
                     {
                         idMax = i;
                     } else {}
                 } // for
-                std::cout<<"===> Winner is "<<currentGame.getHero(idMax).getName()<<std::endl;
+                std::cout<<"===> Winner is "<<currentGame.getHero(idMax+1).getName()<<std::endl;
             } // else
         } // else
     } // else

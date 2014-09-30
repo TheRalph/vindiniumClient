@@ -64,7 +64,9 @@ int main(int inArgC, char** inpArgV)
                     activeBehavior(""),
                     navigator(""),
                     gameMap("m1");
+
         MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_TRAINING_MODE;
+//        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_ARENA_MODE;
 
         if (vindiniumKey == "--help")
         {

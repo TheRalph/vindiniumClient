@@ -58,6 +58,8 @@ enum E_BOARD_OBJECTS
     NB_BOARD_OBJECTS
 }; // enum E_BOARD_OBJECTS
 
+typedef std::forward_list<int> path_t;
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -87,11 +89,12 @@ class CGame
         /**
         * @brief Get path from the current hero position to go to a given cellId
         * @param inCellId the cellId to go to
-        * @return a list of cellIds from the current hero position to the destination
+        * @param outPath path from the current hero position to go to a given cellId
+        * @return true is a path has been found
         * 
-        * Hero cellId is not in the list, destination cellId is the last element of the list
+        * Hero cellId is not in the path, destination cellId is the last element of the path
         */
-        std::forward_list<int> getPathTo(const int inCellId) const;
+        bool getPathTo(const int inCellId, path_t& outPath) const;
 
         /**
         * @brief Get number of cells from the current hero and a position to reach (shortest path)
@@ -113,6 +116,30 @@ class CGame
         int getDistanceTo(const int inCellId) const;
 
         /**
+        * @brief Get the opponent id with the max mine count
+        * @param outOpponentIdWithMaxMineCount the id of the opponent with the max mine count. If no opponent is found outOpponentIdWithMaxMineCount = -1
+        * @param outMaxMineCount the mine count of the opponent found. If no opponent is found outMaxMineCount = 0
+        * @return true if an opponent has been found
+        */
+        bool getOpponentIdWithMaxMineCount(int &outOpponentIdWithMaxMineCount, int &outMaxMineCount) const;
+
+        /**
+        * @brief Get the cellId and the path to reach the closest tavern
+        * @param outTavernCellId the cellId of the tavern found. If no tavern is found outTavernCellId = -1
+        * @param outClosestTavernPath the path to reach the tavern found. If no tavern is found outClosestTavernPath is empty
+        * @return true is a tavern has been found
+        */
+        bool getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernPath) const;
+
+        /**
+        * @brief Get the cellId and the path to reach the closest gold mine the current hero do not own
+        * @param outGoldMineCellId the cellId of the gold mine found. If no gold mine is found outGoldMineCellId = -1
+        * @param outClosestGoldMinePath the path to reach the gold mine found. If no gold mine is found outClosestGoldMinePath is empty
+        * @return true is a gold mine has been found
+        */
+        bool getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, path_t &outClosestGoldMinePath) const;
+
+        /**
         * @brief Return the game id
         * @return the game id
         */
@@ -126,16 +153,16 @@ class CGame
 
         /**
         * @brief Return a reference to an hero
-        * @param inHeroId the id of the hero to get
+        * @param inHeroId the id of the hero to get (the hero id starts from 1)
         * @return a reference to an hero
         */
-        inline const CHero& getHero(const int inHeroId) const { return m_heros.at(inHeroId); }
+        inline const CHero& getHero(const int inHeroId) const { return m_heros.at(inHeroId-1); }
 
         /**
         * @brief Return the current hero to play
         * @return the current hero to play
         */
-        inline const CHero& getMyHero() const { return getHero(m_myHeroId-1); }
+        inline const CHero& getMyHero() const { return getHero(m_myHeroId); }
 
         /**
         * @brief Return the id of the current hero to play
@@ -193,7 +220,15 @@ class CGame
         * @param inPosition the position to use
         * @return the abscissa in the 1D board representation of a 2D position
         */
-        inline int get1DCoordOnBoard(const CPosition& inPosition) const { return ((inPosition.getX()>=0 && inPosition.getY()>=0)? inPosition.getX()+inPosition.getY()*m_boardEdgeSize:-1); }
+        inline int get1DCoordOnBoard(const CPosition& inPosition) const { return get1DCoordOnBoard(inPosition.getX(), inPosition.getY()); }
+
+        /**
+        * @brief return the abscissa in the 1D board representation of a 2D position
+        * @param inX the horizontal coordinate
+        * @param inY the vertical coordinate
+        * @return the abscissa in the 1D board representation of a 2D position
+        */
+        inline int get1DCoordOnBoard(const int inX, const int inY) const { return ((inX>=0 && inY>=0)? inX+inY*m_boardEdgeSize:-1); }
 
         /**
         * @brief return the 2D position in the board
@@ -257,8 +292,9 @@ class CGame
         std::vector<int> m_opponentHeroIds;
 
         /// board data
-        std::vector<CPosition> m_tavernPositionsList; ///< the list of tavern positions
-        std::vector<CPosition> m_goldMinePositionsList; /// the list of gold mine positions
+        std::vector<int> m_tavernCellIdsList; ///< the list of tavern cellId (position in 1D buffer)
+        std::vector<int> m_goldMineCellIdsList; /// the list of gold mine cellId (position in 1D buffer)
+        std::vector<int> m_unownedGoldMineCellIdsList; /// the list of gold mine cellId (position in 1D buffer) which are owned by no one
         std::vector<int> m_boardDistances; ///< all the distances from each board cell to the top-left corner of the board
         std::vector<E_BOARD_OBJECTS> m_staticBoard; ///< board defined at the beginning of the game with only static objects
         std::vector<E_BOARD_OBJECTS> m_currentBoard; ///< current board with other heros

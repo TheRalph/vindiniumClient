@@ -32,9 +32,9 @@ echo "#!/bin/bash" > mitchIA.sh
 echo "../bin/vindiniumLauncher $vindinium_key botMitch $navigator" >> mitchIA.sh
 chmod +x mitchIA.sh
 
-echo "#!/bin/bash" > aggressiveIA.sh
-echo "../bin/vindiniumLauncher $vindinium_key aggressive $navigator" >> aggressiveIA.sh
-chmod +x aggressiveIA.sh
+echo "#!/bin/bash" > TheRalphBot.sh
+echo "../bin/vindiniumLauncher $vindinium_key TheRalphBot $navigator" >> TheRalphBot.sh
+chmod +x TheRalphBot.sh
 
 ln -s ../bin/vindiniumLauncher vindiniumLauncher
 

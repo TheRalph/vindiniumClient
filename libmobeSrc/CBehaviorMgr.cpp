@@ -198,7 +198,7 @@ int CBehaviorMgr::loadBehaviorModuleFolder(const std::string& inBehaviorModuleFo
 ////////////////////////////////////////////////////////////////////////////////
 IBehaviorModule* CBehaviorMgr::getBehavior(const std::string& inBehaviorName)
 {
-    IBehaviorModule* pBehavior = NULL;
+    IBehaviorModule* pBehavior = nullptr;
     auto behaviorIt = m_behaviors.find(inBehaviorName);
     if (behaviorIt != m_behaviors.end())
     {

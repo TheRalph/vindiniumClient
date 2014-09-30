@@ -30,12 +30,14 @@ endmacro()
 ### g++ options
 add_definitions(-std=c++0x)
 add_definitions(-Wall)
-add_definitions(-O3)
 add_definitions(-msse)
 add_definitions(-msse2)
 add_definitions(-msse3)
 add_definitions(-ffast-math)
+add_definitions(-O3)
 add_definitions(-DNDEBUG)
+#add_definitions(-O0)
+#add_definitions(-ggdb)
 
 SET( libmobeFolderSrc ${CMAKE_SOURCE_DIR}/libmobeSrc )
 SET( behaviorModulesFolderSrc ${CMAKE_SOURCE_DIR}/behaviorModulesSrc )
@@ -83,5 +85,13 @@ add_behavior_module( random CRandomBehaviorModule )
 ### aggressive behavior
 add_behavior_module( aggressive CAggressiveBehaviorModule )
 
+### need life behavior
+add_behavior_module( needLife CNeedLifeBehaviorModule )
+
+add_behavior_module( conquerGoldMine CConquerGoldMineBehaviorModule )
+
 ### Mitch behavior (botMitch)
 add_behavior_module( botMitch CBotMitchBehaviorModule )
+
+### The Ralph Bot
+add_behavior_module( TheRalphBot CTheRalphBehaviorModule )

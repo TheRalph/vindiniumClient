@@ -107,6 +107,29 @@ class CHero
         inline bool isCrashed() const { return m_isCrashed; }
 
         /**
+        * @brief Return the vector of cellIds of gold mines owned by the current hero
+        * @return the vector of cellIds of gold mines owned by the current hero
+        */
+        inline std::vector<int>& getOwnedGoldMineCellIds() { return m_ownedGoldMineCellIds; }
+
+        /**
+        * @brief Return the const vector of cellIds of gold mines owned by the current hero
+        * @return the const vector of cellIds of gold mines owned by the current hero
+        */
+        inline const std::vector<int>& getOwnedGoldMineCellIds() const { return m_ownedGoldMineCellIds; }
+
+        /**
+        * @brief Return the maximum life of an hero
+        */
+        inline const int getMaxLife() const { return m_maxLife; }
+
+        /**
+        * @brief Set the maximum life of the hero
+        * @param inMaxLife the max life of a hero
+        */
+        inline void setMaxLife(const int inMaxLife) { m_maxLife = inMaxLife; }
+
+        /**
         * @brief Print in the standard output the current hero data
         */
         void print();
@@ -122,6 +145,8 @@ class CHero
         int m_mineCount;
         CPosition m_spawnPosition;
         bool m_isCrashed;
+        std::vector<int> m_ownedGoldMineCellIds;
+        int m_maxLife;
 }; // class CHero
 
 } // namespace MOBE
