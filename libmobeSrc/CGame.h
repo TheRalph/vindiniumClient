@@ -124,6 +124,22 @@ class CGame
         bool getOpponentIdWithMaxMineCount(int &outOpponentIdWithMaxMineCount, int &outMaxMineCount) const;
 
         /**
+        * @brief Get the cellid and the distance of the closest opponent
+        * @param outOpponentId the id of the closest opponent. If no opponent is found outOpponentCellId = -1
+        * @param outOpponentDistance the distance of the closest opponent. If no opponent is found outOpponentDistance = -1
+        * @return true if an opponent has been found
+        */
+        bool getClosestOpponent(int &outOpponentId, int &outOpponentDistance) const;
+
+        /**
+        * @brief Get the closest opponent path
+        * @param outOpponentId the id of the closest opponent. If no opponent is found outOpponentCellId = -1
+        * @param outClosestOpponentPath the path of the closest opponent. If no opponent is found outClosestOpponentPath is empty
+        * @return true if an opponent path has been found
+        */
+        bool getClosestOpponentPath(int &outOpponentId, path_t &outClosestOpponentPath) const;
+
+        /**
         * @brief Get the cellId and the path to reach the closest tavern
         * @param outTavernCellId the cellId of the tavern found. If no tavern is found outTavernCellId = -1
         * @param outClosestTavernPath the path to reach the tavern found. If no tavern is found outClosestTavernPath is empty
@@ -132,10 +148,20 @@ class CGame
         bool getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernPath) const;
 
         /**
+        * @brief Get the cellId and the distance of the closest gold mine the current hero do not own
+        * @param outGoldMineCellId the cellId of the gold mine found. If no gold mine is found outGoldMineCellId = -1
+        * @param outGoldMineDistance the distance of the gold mine found. If no gold mine is found outGoldMineDistance = -1
+        * @return true is a gold mine has been found
+        */
+        bool getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, int& outGoldMineDistance) const;
+
+        /**
         * @brief Get the cellId and the path to reach the closest gold mine the current hero do not own
         * @param outGoldMineCellId the cellId of the gold mine found. If no gold mine is found outGoldMineCellId = -1
         * @param outClosestGoldMinePath the path to reach the gold mine found. If no gold mine is found outClosestGoldMinePath is empty
         * @return true is a gold mine has been found
+        * 
+        * Call of CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, int& outGoldMineDistance)
         */
         bool getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, path_t &outClosestGoldMinePath) const;
 
@@ -191,6 +217,12 @@ class CGame
         inline int getTrueTurn() const { return m_turn/m_nbPlayers; }
 
         /**
+        * @brief Return the number of mines
+        * @return the number of mines
+        */
+        inline int getNbMines() const { return m_goldMineCellIdsList.size(); }
+
+        /**
         * @brief Return the max number of turns (is a multiple of the number of player).
         * @return the max turn (is a multiple of the number of player).
         * 
@@ -209,11 +241,6 @@ class CGame
         * @return the number of players of the game
         */
         inline int getNbPlayers() const { return m_nbPlayers; }
-
-        /**
-        * @brief Print in the standard output the current game data
-        */
-        void print();
 
         /**
         * @brief return the abscissa in the 1D board representation of a 2D position
@@ -236,6 +263,23 @@ class CGame
         * @return the 2D position in the board
         */
         inline CPosition get2DCoordOnBoard(const int in1DPosition) const { return CPosition( in1DPosition%m_boardEdgeSize, in1DPosition/m_boardEdgeSize); }
+
+        /**
+        * @brief Print in the standard output the current game data
+        */
+        void print() const;
+
+        /**
+        * @brief print into the standard output the given path
+        * @param inPath the path to print
+        * @param inComment the comment to print
+        */
+        void printPath( const path_t& inPath, const std::string& inComment ) const;
+
+        /**
+        * @brief Print in the standard output the current game board and distance map
+        */
+        void printBoard() const;
 
     private:
         /**

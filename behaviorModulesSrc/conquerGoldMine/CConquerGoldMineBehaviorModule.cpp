@@ -44,6 +44,8 @@ E_BEHAVIOR_ACTIONS CConquerGoldMineBehaviorModule::playBehavior(const CGame& inG
 
     if (inGame.getClosestGoldMineMyHeroDoNotControlPath(closestGoldMineCellId, closestGoldMinePath))
     {
+//         inGame.printPath(closestGoldMinePath, m_name);
+
         const CHero &myHero = inGame.getMyHero();
         const CPosition nextPosition(inGame.get2DCoordOnBoard(*closestGoldMinePath.cbegin()));
         int deltaX = nextPosition.getX() - myHero.getPosition().getX();

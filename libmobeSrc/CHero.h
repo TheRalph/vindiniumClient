@@ -132,7 +132,7 @@ class CHero
         /**
         * @brief Print in the standard output the current hero data
         */
-        void print();
+        void print() const;
 
     private:
         int m_id;

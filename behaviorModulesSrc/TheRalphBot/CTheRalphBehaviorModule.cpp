@@ -15,10 +15,25 @@ namespace MOBE
 
 CREATE_C_SYMBOLS( CTheRalphBehaviorModule )
 
+enum E_THE_RALPH_BOT_STATES
+{
+    E_CONQUER_GOLD_MINES = 0,
+    E_NEED_LIFE,
+    E_AGGRESSIVE,
+    NB_THE_RALPH_BOT_STATES
+}; // enum E_THE_RALPH_BOT_STATES
+
+static const std::string E_THE_RALPH_BOT_STATES[NB_THE_RALPH_BOT_STATES]={
+    "CONQUER_GOLD_MINES",
+    "NEED_LIFE",
+    "AGGRESSIVE",
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 CTheRalphBehaviorModule::CTheRalphBehaviorModule()
-: m_isInitialized(false)
+: m_isInitialized(false),
+  m_status(E_CONQUER_GOLD_MINES)
 {
     m_version = 0;
     m_name    = "TheRalphBot";
@@ -71,28 +86,86 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
 
     if (initialize())
     {
+
+
         const CHero &myHero = inGame.getMyHero();
-        if (myHero.getLife() < 0.51*myHero.getMaxLife())
+        if ( myHero.getMineCount() == inGame.getNbMines()                               ||
+             ( m_status != E_NEED_LIFE && myHero.getLife() < 0.35*myHero.getMaxLife() ) ||
+             ( m_status == E_NEED_LIFE && myHero.getLife() < 0.98*myHero.getMaxLife() ) )
         {
-            std::cout<<"NeedLife "<<std::endl;
-            nextAction = m_pNeedLife->playBehavior(inGame);
+            m_status = E_NEED_LIFE;
         }
         else
         {
-            int opponentIdWithMaxMineCount = 0;
-            int maxMineCount = 0;
-            if (inGame.getOpponentIdWithMaxMineCount(opponentIdWithMaxMineCount, maxMineCount) &&
-                maxMineCount > 2*myHero.getMineCount() )
+            int closestGoldMineDistance = -1;
+            int closestGoldMineCellId = -1;
+            int closestOpponentDistance = -1;
+            int closestOpponentId = -1;
+//            int opponentIdWithMaxMineCount = -1;
+//            int MaxMineCountOfOpponent = -1;
+
+            const bool isGoldMineAvailable = inGame.getClosestGoldMineCellIdMyHeroDoNotControl(closestGoldMineCellId, closestGoldMineDistance);
+            const bool isClosestOpponentAvailable = inGame.getClosestOpponent(closestOpponentId, closestOpponentDistance);
+//            const bool isOpponentWithMaxCountAvailable = inGame.getOpponentIdWithMaxMineCount(opponentIdWithMaxMineCount, MaxMineCountOfOpponent);
+
+            const CHero *pClosestHero = (isClosestOpponentAvailable? &inGame.getHero(closestOpponentId):nullptr);
+//            const CHero *pHeroWithMaxGoldMine = (isOpponentWithMaxCountAvailable? &inGame.getHero(opponentIdWithMaxMineCount):nullptr);
+            if ( isClosestOpponentAvailable && isGoldMineAvailable )
             {
-                std::cout<<"Aggressive "<<std::endl;
-                nextAction = m_pAggressive->playBehavior(inGame);
+                if ( myHero.getLife() > 0.30*myHero.getMaxLife()
+//                     && pClosestHero->getMineCount() > 0
+                     && pClosestHero->getLife() < myHero.getLife()
+                     && closestGoldMineDistance >= closestOpponentDistance )
+                {
+                    m_status = E_AGGRESSIVE;
+                }
+                else
+                {
+                    m_status = E_CONQUER_GOLD_MINES;
+                } // else
+            }
+            else if ( isGoldMineAvailable )
+            {
+                m_status = E_CONQUER_GOLD_MINES;
+            }
+            else if ( isClosestOpponentAvailable
+//                      && pClosestHero->getMineCount() > 0
+                      && pClosestHero->getLife() < myHero.getLife()
+                      && myHero.getLife() > 0.30*myHero.getMaxLife()
+                    )
+            {
+                m_status = E_AGGRESSIVE;
             }
             else
             {
-                std::cout<<"ConquerGoldMine "<<std::endl;
-                nextAction = m_pConquerGoldMine->playBehavior(inGame);
+                m_status = E_NEED_LIFE;
             } // else
         } // else
+
+        /// manage motion
+        switch (m_status)
+        {
+            case E_NEED_LIFE:
+                nextAction = m_pNeedLife->playBehavior(inGame);
+                break;
+            case E_CONQUER_GOLD_MINES:
+                nextAction = m_pConquerGoldMine->playBehavior(inGame);
+                break;
+            case E_AGGRESSIVE:
+                nextAction = m_pAggressive->playBehavior(inGame);
+                break;
+            case NB_THE_RALPH_BOT_STATES:
+            default:
+                nextAction = E_ACTION_STAY;
+                break;
+        }; // switch
+
+        if (nextAction == E_ACTION_STAY)
+        {
+            inGame.printBoard();
+//            inGame.printPath(E_THE_RALPH_BOT_STATES[m_status]);
+        } else {}
+
     } else {}
     return nextAction;
 } // playBehavior

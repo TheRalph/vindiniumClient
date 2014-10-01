@@ -63,10 +63,10 @@ int main(int inArgC, char** inpArgV)
                     vindiniumURL("vindinium.org"),
                     activeBehavior(""),
                     navigator(""),
-                    gameMap("m1");
+                    gameMap("m6");
 
-        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_TRAINING_MODE;
-//        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_ARENA_MODE;
+//        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_TRAINING_MODE;
+        MOBE::E_VINDINIUM_MODE gameMode = MOBE::E_VINDINIUM_ARENA_MODE;
 
         if (vindiniumKey == "--help")
         {

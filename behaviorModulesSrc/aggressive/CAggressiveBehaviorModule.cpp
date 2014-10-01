@@ -51,6 +51,8 @@ E_BEHAVIOR_ACTIONS CAggressiveBehaviorModule::playBehavior(const CGame& inGame)
         path_t targetHeroPath;
         if (inGame.getPathTo(targetHeroCellId, targetHeroPath))
         {
+//             inGame.printPath(targetHeroPath, m_name);
+
             const CHero &myHero = inGame.getMyHero();
             const CPosition nextPosition(inGame.get2DCoordOnBoard(*targetHeroPath.cbegin()));
             int deltaX = nextPosition.getX() - myHero.getPosition().getX();

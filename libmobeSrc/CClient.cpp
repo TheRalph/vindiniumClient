@@ -214,11 +214,15 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
                     } // end data processing
 
                     std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
+//                    std::cout<<m_pActiveBehavior->getName()<<" ";
+                    std::cout<<G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection]<<" ";
                     std::cout.setf( std::ios::fixed, std:: ios::floatfield );
                     std::cout<<std::setprecision(3)<<"Process data="<<processDataInMs<<" ms, Behavior="<<behaviorTimeMs<<" ms, ";
                     std::cout<<std::setprecision(3)<<"Total client time="<<processDataInMs+behaviorTimeMs<<" ms, ";
-                    std::cout<<std::setprecision(3)<<"Waiting for server="<<waitingForServerInMs<<" ms         \r";
-                    std::cout.flush();
+                    std::cout<<std::setprecision(3)<<"Waiting for server="<<waitingForServerInMs<<" ms";
+                    std::cout<<std::endl;
+//                    std::cout<<"     \r"<<std::endl;
+//                    std::cout.flush();
                 } // while
                 retVal = currentGame.isFinished();
                 std::cout<<std::endl;

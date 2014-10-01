@@ -16,6 +16,7 @@
 namespace MOBE
 {
 
+#define DEBUG_BOARD 0
 const int G_NUMBER_OF_PLAYERS = 4;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,26 +162,8 @@ void CGame::updateBoardDistances()
         } // for
     } // while
 
-#if 0
-    std::cout<<"Current board:"<<std::endl;
-    for (int i = 0, cellId = 0; i<m_boardEdgeSize; i++)
-    {
-        for (int j = 0; j<m_boardEdgeSize; j++)
-        {
-            std::cout<<std::setw(4)<<m_currentBoard.at(cellId++);
-        } // for
-        std::cout<<std::endl;
-    } // for
-
-    std::cout<<"Distances:"<<std::endl;
-    for (int i = 0, cellId = 0; i<m_boardEdgeSize; i++)
-    {
-        for (int j = 0; j<m_boardEdgeSize; j++)
-        {
-            std::cout<<std::setw(4)<<m_boardDistances.at(cellId++);
-        } // for
-        std::cout<<std::endl;
-    } // for
+#if (DEBUG_BOARD == 1)
+    printBoard();
 #endif
 } // updateBoardDistances
 
@@ -266,6 +249,48 @@ bool CGame::getOpponentIdWithMaxMineCount(int &outOpponentIdWithMaxMineCount, in
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+bool CGame::getClosestOpponent(int &outOpponentId, int &outOpponentDistance) const
+{
+    outOpponentId = -1;
+    outOpponentDistance = std::numeric_limits<int>::max();
+    for (const int &opponentHeroId : m_opponentHeroIds)
+    {
+        const int opponentCellId = get1DCoordOnBoard(getHero(opponentHeroId).getPosition());
+        const int opponentDistance = getDistanceTo( opponentCellId );
+        if ( opponentDistance >= 0 && opponentDistance < outOpponentDistance)
+        {
+            outOpponentDistance = opponentDistance;
+            outOpponentId = opponentHeroId;
+        } else {}
+    } // for
+    bool retVal = (outOpponentId >= 0);
+    if (!retVal)
+    {
+        outOpponentDistance = -1;
+    } else {}
+    return retVal;
+} // getClosestOpponent
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+bool CGame::getClosestOpponentPath(int &outOpponentId, path_t &outClosestOpponentPath) const
+{
+    outClosestOpponentPath.clear();
+    outOpponentId = -1;
+    int minOpponentDistance = -1;
+
+    bool pathFound = false;
+    if (getClosestOpponent(outOpponentId, minOpponentDistance))
+    {
+        const int opponentCellId = get1DCoordOnBoard(getHero(outOpponentId).getPosition());
+        pathFound = getPathTo(opponentCellId, outClosestOpponentPath);
+    } else {}
+
+    return pathFound;
+} // getClosestOpponentPath
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 bool CGame::getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernPath) const
 {
     outClosestTavernPath.clear();
@@ -292,19 +317,17 @@ bool CGame::getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernP
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-bool CGame::getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, path_t &outClosestGoldMinePath) const
+bool CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, int&outGoldMineDistance) const
 {
-    outClosestGoldMinePath.clear();
     outGoldMineCellId = -1;
-    int minGoldMineDistance = std::numeric_limits<int>::max();
-
+    outGoldMineDistance = std::numeric_limits<int>::max();
     /// first the mines owned by no one
     for (const int& goldMineCellId : m_unownedGoldMineCellIdsList)
     {
         const int goldMineDistance = getDistanceTo( goldMineCellId );
-        if ( goldMineDistance >= 0 && goldMineDistance < minGoldMineDistance)
+        if ( goldMineDistance >= 0 && goldMineDistance < outGoldMineDistance)
         {
-            minGoldMineDistance = goldMineDistance;
+            outGoldMineDistance = goldMineDistance;
             outGoldMineCellId = goldMineCellId;
         } else {}
     } // for
@@ -316,16 +339,31 @@ bool CGame::getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, pat
         for (const int& goldMineCellId : hero.getOwnedGoldMineCellIds())
         {
             const int goldMineDistance = getDistanceTo( goldMineCellId );
-            if ( goldMineDistance < minGoldMineDistance)
+            if ( goldMineDistance < outGoldMineDistance)
             {
-                minGoldMineDistance = goldMineDistance;
+                outGoldMineDistance = goldMineDistance;
                 outGoldMineCellId = goldMineCellId;
             } else {}
         } // for
     } // for
+    bool retVal = (outGoldMineCellId >= 0);
+    if (!retVal)
+    {
+        outGoldMineDistance = -1;
+    } else {}
+    return (outGoldMineCellId >= 0);
+} // getClosestGoldMineCellIdMyHeroDoNotControl
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+bool CGame::getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, path_t &outClosestGoldMinePath) const
+{
+    outClosestGoldMinePath.clear();
+    outGoldMineCellId = -1;
+    int minGoldMineDistance = std::numeric_limits<int>::max();
 
     bool pathFound = false;
-    if (outGoldMineCellId >= 0)
+    if (getClosestGoldMineCellIdMyHeroDoNotControl(outGoldMineCellId, minGoldMineDistance))
     {
         pathFound = getPathTo(outGoldMineCellId, outClosestGoldMinePath);
     } else {}
@@ -425,12 +463,12 @@ bool CGame::getPathTo(const int inCellId, path_t& outPath) const
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void CGame::print()
+void CGame::print() const
 {
     std::cout<<"Game Id='"<<m_id<<"'"<<std::endl;
     std::cout<<"Turn="<<m_turn<<std::endl;
     std::cout<<"MaxTurns="<<m_maxTurns<<std::endl;
-    for (auto &hero:m_heros)
+    for (const CHero &hero:m_heros)
     {
         hero.print();
     } // for
@@ -460,6 +498,28 @@ void CGame::print()
         std::cout<<"Gold Mine position="<<goldMinePosition.getX()<<" , "<<goldMinePosition.getY()<<std::endl;
     } // for
 
+    printBoard();
+} // print
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void CGame::printPath( const path_t& inPath, const std::string& inComment ) const
+{
+    std::cout<<inComment;
+
+    for ( const int cellId : inPath )
+    {
+        const CPosition cellPos = get2DCoordOnBoard(cellId);
+        std::cout<<" ( "<<cellPos.getX()<<","<<cellPos.getY()<<" )" ;
+    } // for
+
+    std::cout<<std::endl;
+} // printPath
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void CGame::printBoard() const
+{
     std::cout<<"Current board:"<<std::endl;
     for (int i = 0, cellId = 0; i<m_boardEdgeSize; i++)
     {
@@ -479,6 +539,6 @@ void CGame::print()
         } // for
         std::cout<<std::endl;
     } // for
-} // print
+} // printBoard
 
 } // namespace MOBE
