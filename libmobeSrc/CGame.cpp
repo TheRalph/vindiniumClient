@@ -3,6 +3,7 @@
 /// Global includes
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <limits>
 #include <json/json.h>
 #include <list>
@@ -58,7 +59,9 @@ CGame::CGame(const Json::Value& inJsonValues, const int inMyHeroId)
 
     m_isFinished = inJsonValues["finished"].asBool();
 
-    initStaticBoard();
+    m_jsonStr = inJsonValues.toStyledString();
+
+    initStaticBoard(inJsonValues);
 } // Constructor
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +73,7 @@ CGame::~CGame()
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void CGame::initStaticBoard()
+void CGame::initStaticBoard(const Json::Value& inJsonValues)
 {
     m_tavernCellIdsList.clear();
     m_goldMineCellIdsList.clear();
@@ -114,8 +117,7 @@ void CGame::initStaticBoard()
         } // for
     } // for
 
-    updateCurrentBoard();
-    updateBoardDistances();
+    update(inJsonValues);
 } // initStaticBoard
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -174,6 +176,7 @@ void CGame::update(const Json::Value& inJsonValues)
     m_isFinished = inJsonValues["finished"].asBool();
     m_turn = inJsonValues["turn"].asInt();
     m_boardStr = inJsonValues["board"]["tiles"].asString();
+    m_jsonStr = inJsonValues.toStyledString();
 
     /// heros come always in the same order !
     int i = 0;
@@ -540,5 +543,19 @@ void CGame::printBoard() const
         std::cout<<std::endl;
     } // for
 } // printBoard
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+bool CGame::dumpBoardData(const std::string& inPathFileToSave) const
+{
+    bool retVal = false;
+    std::ofstream file(inPathFileToSave);
+    if (file)
+    {
+        file<<m_jsonStr;
+        retVal = file.good();
+    } else {}
+    return retVal;
+} // dumpBoardData
 
 } // namespace MOBE

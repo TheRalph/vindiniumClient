@@ -70,6 +70,18 @@ class CPosition
         inline void setXY(const int inX, const int inY) { m_x = inX; m_y = inY; }
 
         /**
+        * @brief return true if the current position is equal to the given one
+        * @return true if the current position is equal to the given one
+        */
+        inline bool operator==(const CPosition& inPosition) { return (inPosition.getX() == getX()) && (inPosition.getY() == getY()); }
+
+        /**
+        * @brief return true if the current position is different to the given one
+        * @return true if the current position is different to the given one
+        */
+        inline bool operator!=(const CPosition& inPosition) { return !operator==(inPosition); }
+
+        /**
         * @brief Return the 4 connected positions of the current one
         * @return the 4 connected positions of the current one
         * 

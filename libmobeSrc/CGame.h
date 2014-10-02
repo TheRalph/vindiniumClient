@@ -5,7 +5,7 @@
 /// Global includes
 #include <string>
 #include <vector>
-#include <forward_list>
+#include <list>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ enum E_BOARD_OBJECTS
     NB_BOARD_OBJECTS
 }; // enum E_BOARD_OBJECTS
 
-typedef std::forward_list<int> path_t;
+typedef std::list<int> path_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,6 +223,12 @@ class CGame
         inline int getNbMines() const { return m_goldMineCellIdsList.size(); }
 
         /**
+        * @brief Return the number of taverns
+        * @return the number of taverns
+        */
+        inline int getNbTaverns() const { return m_tavernCellIdsList.size(); }
+
+        /**
         * @brief Return the max number of turns (is a multiple of the number of player).
         * @return the max turn (is a multiple of the number of player).
         * 
@@ -265,6 +271,18 @@ class CGame
         inline CPosition get2DCoordOnBoard(const int in1DPosition) const { return CPosition( in1DPosition%m_boardEdgeSize, in1DPosition/m_boardEdgeSize); }
 
         /**
+        * @brief return the edge size of the board
+        * @return the edge size of the board
+        */
+        inline int getBoardEdgeSize() const { return m_boardEdgeSize; }
+
+        /**
+        * @brief return the board with static objects
+        * @return the board with static objects
+        */
+        inline const std::vector<MOBE::E_BOARD_OBJECTS>& getStaticBoard() const { return m_staticBoard; }
+
+        /**
         * @brief Print in the standard output the current game data
         */
         void print() const;
@@ -281,11 +299,19 @@ class CGame
         */
         void printBoard() const;
 
+        /**
+        * @brief Dump the board string, data and distance map into a file. Usefull for debug !
+        * @param inPathFileToSave the path of the file to dump the borad string into
+        * @return true if the dump has been done successfully
+        */
+        bool dumpBoardData(const std::string& inPathFileToSave) const;
+
     private:
         /**
         * @brief Initialize the board of static objects
+        * @param inJsonValues the json data describing the game
         */
-        void initStaticBoard();
+        void initStaticBoard(const Json::Value& inJsonValues);
 
         /**
         * @brief Update the current board with the static board and the moving objects
@@ -331,6 +357,7 @@ class CGame
         std::vector<CHero> m_heros;
         int m_boardEdgeSize;
         std::string m_boardStr;
+        std::string m_jsonStr;
         bool m_isFinished;
         int m_myHeroId; ///< the id of the current hero to play. Use m_myHeroId-1 to find it in m_heros vector
         std::vector<int> m_opponentHeroIds;

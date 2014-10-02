@@ -21,7 +21,7 @@ else
 fi
 
 rm -rf build
-mkdir -p build
+mkdir -p build/dump
 cd build
 
 echo "#!/bin/bash" > testIA.sh

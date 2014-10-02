@@ -3,6 +3,7 @@
 /// Global includes
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ enum E_THE_RALPH_BOT_STATES
     NB_THE_RALPH_BOT_STATES
 }; // enum E_THE_RALPH_BOT_STATES
 
-static const std::string E_THE_RALPH_BOT_STATES[NB_THE_RALPH_BOT_STATES]={
+static const std::string G_THE_RALPH_BOT_STATES_DICTIONARY[NB_THE_RALPH_BOT_STATES]={
     "CONQUER_GOLD_MINES",
     "NEED_LIFE",
     "AGGRESSIVE",
@@ -162,8 +163,16 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
 
         if (nextAction == E_ACTION_STAY)
         {
-            inGame.printBoard();
-//            inGame.printPath(E_THE_RALPH_BOT_STATES[m_status]);
+            std::stringstream fileName;
+            fileName<<"./dump/"<<m_name<<"_"<<G_THE_RALPH_BOT_STATES_DICTIONARY[m_status]<<"_"<<inGame.getTrueTurn()<<"_"<<myHero.getId()<<".json";
+            if (inGame.dumpBoardData(fileName.str()))
+            {
+                std::cout<<"'"<<fileName<<"' dump OK"<<std::endl;
+            }
+            else
+            {
+                std::cerr<<"'"<<fileName<<"' dump NOT OK"<<std::endl;
+            }
         } else {}
 
     } else {}

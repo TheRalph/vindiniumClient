@@ -69,6 +69,12 @@ set_target_properties(mobe PROPERTIES
 #--- lib jsoncpp
 config_project_by_pkgconfig( mobe jsoncpp )
 
+#--- utests
+add_executable(testPathTo ${libmobeFolderSrc}/utest/testPathTo.cpp)
+target_link_libraries( testPathTo mobe )
+set_target_properties(testPathTo PROPERTIES
+         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
 ################################################################################
 ### vindiniumLauncher
 add_executable(vindiniumLauncher vindiniumLauncher.cpp)
