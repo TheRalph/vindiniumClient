@@ -1,4 +1,5 @@
 *~
+*.swp
 *.so
 *.o
 build/
@@ -7,3 +8,5 @@ lib/
 *.kdev4
 *.pb.*
 behaviorModules/
+tags
+
