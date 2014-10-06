@@ -178,11 +178,18 @@ class CGame
         inline bool isFinished() const { return m_isFinished; }
 
         /**
+        * @brief Return a const reference to an hero
+        * @param inHeroId the id of the hero to get (the hero id starts from 1)
+        * @return a const reference to an hero
+        */
+        inline const CHero& getHero(const int inHeroId) const { return m_heros.at(inHeroId-1); }
+
+        /**
         * @brief Return a reference to an hero
         * @param inHeroId the id of the hero to get (the hero id starts from 1)
         * @return a reference to an hero
         */
-        inline const CHero& getHero(const int inHeroId) const { return m_heros.at(inHeroId-1); }
+        inline CHero& getHero(const int inHeroId) { return m_heros.at(inHeroId-1); }
 
         /**
         * @brief Return the current hero to play

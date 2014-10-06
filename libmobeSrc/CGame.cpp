@@ -178,11 +178,9 @@ void CGame::update(const Json::Value& inJsonValues)
     m_boardStr = inJsonValues["board"]["tiles"].asString();
     m_jsonStr = inJsonValues.toStyledString();
 
-    /// heros come always in the same order !
-    int i = 0;
     for (auto &heroJSon : inJsonValues["heroes"])
     {
-        CHero &hero = m_heros.at(i++);
+        CHero &hero = getHero(heroJSon["id"].asInt());
         hero.update(heroJSon);
         hero.getOwnedGoldMineCellIds().clear();
     } // for

@@ -87,8 +87,6 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
 
     if (initialize())
     {
-
-
         const CHero &myHero = inGame.getMyHero();
         if ( myHero.getMineCount() == inGame.getNbMines()                               ||
              ( m_status != E_NEED_LIFE && myHero.getLife() < 0.35*myHero.getMaxLife() ) ||
@@ -157,6 +155,7 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
                 break;
             case NB_THE_RALPH_BOT_STATES:
             default:
+                m_status = E_NEED_LIFE;
                 nextAction = E_ACTION_STAY;
                 break;
         }; // switch
