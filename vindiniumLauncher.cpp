@@ -83,6 +83,8 @@ void displayHelp(const std::string& inExeName)
     std::cout << "      The browser your want to open to display the game."       << std::endl;
     std::cout << "      Default: none."                                           << std::endl;
     std::cout                                                                     << std::endl;
+    std::cout << "Example: '"<<inExeName<<" --behaviour=random --browser=firefox --mode=arena' uviqc5an"<< std::endl;
+    std::cout                                                                     << std::endl;
 
     // Behaviour
     MOBE::CBehaviorMgr behaviorMrg;
@@ -104,14 +106,15 @@ void displayHelp(const std::string& inExeName)
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void parse_options(const int argc, char **argv, struct SParameters& out_parameters)
+bool parseOptions(const int inArgc, char **inArgv, struct SParameters& outParameters)
 {
-    std::string exeName = std::string(basename(argv[0]));
+    bool parseOk = true;
+    std::string exeName = std::string(basename(inArgv[0]));
 
-    if (argc == 1)
+    if (inArgc == 1)
     {
         displayHelp(exeName);
-        exit(EXIT_FAILURE);
+        parseOk = false;
     }
     else
     {
@@ -119,25 +122,24 @@ void parse_options(const int argc, char **argv, struct SParameters& out_paramete
 
         do
         {
-            opt = getopt_long(argc, argv, short_options, long_options, NULL);
+            opt = getopt_long(inArgc, inArgv, short_options, long_options, NULL);
 
             switch(opt)
             {
                 case 'h':
                     displayHelp(exeName);
-                    exit(EXIT_SUCCESS);
                     break;
 
                 case 'u':
-                    out_parameters.m_url = std::string(optarg);
+                    outParameters.m_url = std::string(optarg);
                     break;
 
                 case 'k':
-                    out_parameters.m_key = std::string(optarg);
+                    outParameters.m_key = std::string(optarg);
                     break;
 
                 case 'b':
-                    out_parameters.m_behaviour = std::string(optarg);
+                    outParameters.m_behaviour = std::string(optarg);
                     break;
 
                 case 'a':
@@ -145,26 +147,26 @@ void parse_options(const int argc, char **argv, struct SParameters& out_paramete
                         int mode = atoi(optarg);
                         if ((mode >= 0) && (mode < MOBE::NB_VINDINIUM_MODE))
                         {
-                            out_parameters.m_mode = (MOBE::E_VINDINIUM_MODE)mode;
+                            outParameters.m_mode = (MOBE::E_VINDINIUM_MODE)mode;
                         }
                         else
                         {
                             std::cerr << "Invalid mode" << std::endl;
-                            exit(EXIT_FAILURE);
-                        }
+                            parseOk = false;
+                        } // else
                     }
                     break;
 
                 case 'n':
-                    out_parameters.m_turns = atoi(optarg);
+                    outParameters.m_turns = atoi(optarg);
                     break;
 
                 case 'm':
-                    out_parameters.m_map = std::string(optarg);
+                    outParameters.m_map = std::string(optarg);
                     break;
 
                 case 'w':
-                    out_parameters.m_browser = std::string(optarg);
+                    outParameters.m_browser = std::string(optarg);
                     break;
 
                 case -1:
@@ -172,28 +174,29 @@ void parse_options(const int argc, char **argv, struct SParameters& out_paramete
 
                 case '?':
                     displayHelp(exeName);
-                    exit(EXIT_FAILURE);
+                    parseOk=false;
                     break;
 
                 default:
                     abort();
                     break;
-            }
-        }
-        while (opt != -1);
+            } // switch
+        } while (opt != -1 && parseOk);
 
         // One argument after options: the key
-        if (optind != argc - 1)
+        if (optind != inArgc - 1)
         {
             displayHelp(exeName);
-            exit(EXIT_FAILURE);
+            parseOk=false;
         }
         else
         {
-            out_parameters.m_key = std::string(argv[optind]);
+            outParameters.m_key = std::string(inArgv[optind]);
         }
-    }
-}
+    } // else
+
+    return parseOk;
+} // parseOptions
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,28 +213,30 @@ int main(int inArgC, char** inpArgV)
         .m_browser =    ""
     };
 
-    parse_options(inArgC, inpArgV, parameters);
-
-    MOBE::CClient vdcClient(parameters.m_key,
-                            parameters.m_url,
-                            parameters.m_behaviour,
-                            parameters.m_browser);
-
-    if (!vdcClient.startGame(parameters.m_mode,
-                             parameters.m_turns,
-                             parameters.m_map))
+    bool parseOk = parseOptions(inArgC, inpArgV, parameters);
+    if ( parseOk && !parameters.m_key.empty())
     {
-        std::cerr << "Cannot start game in training mode with key '"
-                  << vdcClient.getKey()
-                  << "' on server '" << vdcClient.getServerHostName()
-                  << "'" << std::endl;
-    }
-    else
-    {
-        // End of the game
-    } // else
+        MOBE::CClient vdcClient(parameters.m_key,
+                                parameters.m_url,
+                                parameters.m_behaviour,
+                                parameters.m_browser);
+
+        if (!vdcClient.startGame(parameters.m_mode,
+                                parameters.m_turns,
+                                parameters.m_map))
+        {
+            std::cerr << "Cannot start game in training mode with key '"
+                      << vdcClient.getKey()
+                      << "' on server '" << vdcClient.getServerHostName()
+                      << "'" << std::endl;
+        }
+        else
+        {
+            // End of the game
+        } // else
+    } else {}
 
     std::cout << "Bye bye!!!" << std::endl;
-    return 0;
+    return (parseOk? 0:1);
 } // main
 

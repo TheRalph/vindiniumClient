@@ -48,6 +48,7 @@ CClient::CClient(const std::string& inVindiniumKey, const std::string& inVindini
     } else {}
 
     std::cout<<"Vindinium client with key: '"<<inVindiniumKey<<"' has been created. Given server: '"<<m_svrHostName<<"' ("<<m_svrIp<<")."<<std::endl;
+    std::cout<<"Waiting server for a new game ..."<<std::endl;
 } // Constructor
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,10 +214,10 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
                         currentGame.update(jsonValues["game"]); // hero update is done in game
                     } // end data processing
 
-                    std::cout<<"---> Turn="<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
+                    std::cout<<"---> Turn="<<std::setw(3)<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
 //                    std::cout<<m_pActiveBehavior->getName()<<" ";
-                    std::cout<<G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection]<<" ";
-                    std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+                    std::cout<<std::setw(6)<<G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection]<<" ";
+                    std::cout.setf( std::ios::fixed, std::ios::floatfield );
                     std::cout<<std::setprecision(3)<<"Process data="<<processDataInMs<<" ms, Behavior="<<behaviorTimeMs<<" ms, ";
                     std::cout<<std::setprecision(3)<<"Total client time="<<processDataInMs+behaviorTimeMs<<" ms, ";
                     std::cout<<std::setprecision(3)<<"Waiting for server="<<waitingForServerInMs<<" ms";

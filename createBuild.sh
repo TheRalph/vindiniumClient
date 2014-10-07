@@ -44,7 +44,9 @@ usage()
     echo "  -w <browser>"
     echo "      The browser your want to open to display the game."
     echo ""
-}
+    echo "Example: './createBuild.sh -a 1 -w firefox -k uviqc5an'"
+    echo ""
+} # usage
 
 ################################################################################
 parse_opt()
@@ -57,12 +59,29 @@ parse_opt()
             k) KEY=${OPTARG} ;;
             a) MODE=${OPTARG} ;;
             m) MAP=${OPTARG} ;;
-            n) NB_TURNS=${OPTARG} ;;
+            n) TURNS=${OPTARG} ;;
             w) BROWSER=${OPTARG} ;;
+            \?) echo "Invalid option: -$OPTARG" >&2; usage ; exit 1 ;;
+            :) echo "Option -$OPTARG requires an argument." >&2; usage ; exit 1 ;;
             *) usage ; exit 1 ;;
         esac
     done
-}
+} # parse_opt
+
+################################################################################
+# $1 -> script name
+# $2 -> behaviour name
+add_script()
+{
+scriptName=$1.sh
+cat > $scriptName << EOF
+#!/bin/sh
+
+$CMD_LINE --behaviour=$2 $KEY
+
+EOF
+chmod u+x $scriptName
+} # add_script
 
 ################################################################################
 parse_opt $@
@@ -89,33 +108,18 @@ if [ -n "$BROWSER" ] ; then
     CMD_LINE="$CMD_LINE --browser=$BROWSER"
 fi
 
+####
 # random
-cat > testIA.sh << EOF
-#!/bin/sh
-
-$CMD_LINE --behaviour=random -- $KEY
-
-EOF
-chmod u+x testIA.sh
+add_script testIA random
 
 # botMitch
-cat > mitchIA.sh << EOF
-#!/bin/sh
-
-$CMD_LINE --behaviour=botMitch -- $KEY
-
-EOF
-chmod u+x mitchIA.sh
+add_script mitchIA botMitch
 
 # TheRalphBot
-cat > TheRalphBot.sh << EOF
-#!/bin/sh
+add_script TheRalphBot TheRalphBot
 
-$CMD_LINE --behaviour=TheRalphBot -- $KEY
-
-EOF
-chmod u+x TheRalphBot.sh
-
+####
+# links
 ln -s ../bin/vindiniumLauncher vindiniumLauncher
 
 cmake ..
