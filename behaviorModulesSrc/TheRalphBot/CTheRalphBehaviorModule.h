@@ -54,6 +54,7 @@ class CTheRalphBehaviorModule : public IBehaviorModule
         IBehaviorModule* m_pNeedLife;
         IBehaviorModule* m_pAggressive;
         IBehaviorModule* m_pConquerGoldMine;
+        IBehaviorModule* m_pAggressiveClose;
         int m_status;
 }; // class CTheRalphBehaviorModule
 

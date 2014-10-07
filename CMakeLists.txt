@@ -91,6 +91,9 @@ add_behavior_module( random CRandomBehaviorModule )
 ### aggressive behavior
 add_behavior_module( aggressive CAggressiveBehaviorModule )
 
+### aggressive close behavior
+add_behavior_module( aggressiveClose CAggressiveCloseBehaviorModule )
+
 ### need life behavior
 add_behavior_module( needLife CNeedLifeBehaviorModule )
 

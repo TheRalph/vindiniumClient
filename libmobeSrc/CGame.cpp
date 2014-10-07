@@ -197,14 +197,14 @@ void CGame::update(const Json::Value& inJsonValues)
         }
         else
         {
-            const unsigned int heroId = owner-(int)'1';
-            if (heroId >= 0 && heroId < m_heros.size())
+            const unsigned int heroId = owner-(int)'0';
+            if (heroId > 0 && heroId <= m_heros.size())
             {
-                CHero &hero = m_heros.at(heroId);
+                CHero &hero = getHero(heroId);
                 hero.getOwnedGoldMineCellIds().emplace_back(goldMineCellId);
             } else
             {
-                std::cerr<<"unknown hero with id="<<heroId+1<<std::endl;
+                std::cerr<<"unknown hero with id="<<heroId<<std::endl;
             }
         } // else
     } // for
@@ -318,10 +318,10 @@ bool CGame::getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernP
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-bool CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, int&outGoldMineDistance) const
+bool CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, int &outGoldMineDistance) const
 {
     outGoldMineCellId = -1;
-    outGoldMineDistance = std::numeric_limits<int>::max();
+    outGoldMineDistance = std::numeric_limits<int>::max()-1;
     /// first the mines owned by no one
     for (const int& goldMineCellId : m_unownedGoldMineCellIdsList)
     {
@@ -340,7 +340,7 @@ bool CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, i
         for (const int& goldMineCellId : hero.getOwnedGoldMineCellIds())
         {
             const int goldMineDistance = getDistanceTo( goldMineCellId );
-            if ( goldMineDistance < outGoldMineDistance)
+            if ( goldMineDistance >= 0 && goldMineDistance < outGoldMineDistance)
             {
                 outGoldMineDistance = goldMineDistance;
                 outGoldMineCellId = goldMineCellId;
@@ -352,7 +352,7 @@ bool CGame::getClosestGoldMineCellIdMyHeroDoNotControl(int &outGoldMineCellId, i
     {
         outGoldMineDistance = -1;
     } else {}
-    return (outGoldMineCellId >= 0);
+    return retVal;
 } // getClosestGoldMineCellIdMyHeroDoNotControl
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +361,7 @@ bool CGame::getClosestGoldMineMyHeroDoNotControlPath(int &outGoldMineCellId, pat
 {
     outClosestGoldMinePath.clear();
     outGoldMineCellId = -1;
-    int minGoldMineDistance = std::numeric_limits<int>::max();
+    int minGoldMineDistance = std::numeric_limits<int>::max()-1;
 
     bool pathFound = false;
     if (getClosestGoldMineCellIdMyHeroDoNotControl(outGoldMineCellId, minGoldMineDistance))

@@ -21,6 +21,7 @@ enum E_THE_RALPH_BOT_STATES
     E_CONQUER_GOLD_MINES = 0,
     E_NEED_LIFE,
     E_AGGRESSIVE,
+    E_AGGRESSIVE_CLOSE,
     NB_THE_RALPH_BOT_STATES
 }; // enum E_THE_RALPH_BOT_STATES
 
@@ -28,6 +29,7 @@ static const std::string G_THE_RALPH_BOT_STATES_DICTIONARY[NB_THE_RALPH_BOT_STAT
     "CONQUER_GOLD_MINES",
     "NEED_LIFE",
     "AGGRESSIVE",
+    "AGGRESSIVE_CLOSE"
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +76,13 @@ bool CTheRalphBehaviorModule::initialize()
             std::cerr<<"Can not load behavior 'conquerGoldMine'"<<std::endl;
         } else {}
 
-        m_isInitialized = (m_pNeedLife && m_pAggressive && m_pConquerGoldMine);
+        m_pAggressiveClose = m_pBehaviorMgr->getBehavior("aggressiveClose");
+        if (!m_pAggressiveClose)
+        {
+            std::cerr<<"Can not load behavior 'aggressiveClose'"<<std::endl;
+        } else {}
+
+        m_isInitialized = (m_pNeedLife && m_pAggressive && m_pConquerGoldMine && m_pAggressiveClose);
     } else {}
     return m_isInitialized;
 } // initialize
@@ -116,7 +124,7 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
                      && pClosestHero->getLife() < myHero.getLife()
                      && closestGoldMineDistance >= closestOpponentDistance )
                 {
-                    m_status = E_AGGRESSIVE;
+                    m_status = E_AGGRESSIVE_CLOSE;
                 }
                 else
                 {
@@ -133,7 +141,7 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
                       && myHero.getLife() > 0.30*myHero.getMaxLife()
                     )
             {
-                m_status = E_AGGRESSIVE;
+                m_status = E_AGGRESSIVE_CLOSE;
             }
             else
             {
@@ -153,9 +161,12 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
             case E_AGGRESSIVE:
                 nextAction = m_pAggressive->playBehavior(inGame);
                 break;
+            case E_AGGRESSIVE_CLOSE:
+                nextAction = m_pAggressiveClose->playBehavior(inGame);
+                break;
             case NB_THE_RALPH_BOT_STATES:
             default:
-                m_status = E_NEED_LIFE;
+//                m_status = E_NEED_LIFE;
                 nextAction = E_ACTION_STAY;
                 break;
         }; // switch
@@ -163,6 +174,7 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
         if (nextAction == E_ACTION_STAY)
         {
             std::stringstream fileName;
+//            inGame.printBoard();
             fileName<<"./dump/"<<m_name<<"_"<<G_THE_RALPH_BOT_STATES_DICTIONARY[m_status]<<"_"<<inGame.getTrueTurn()<<"_"<<myHero.getId()<<".json";
             if (inGame.dumpBoardData(fileName.str()))
             {
