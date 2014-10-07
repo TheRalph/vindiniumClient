@@ -1,7 +1,7 @@
 1. Install the needed libraries and tools
 *****************************************
 
-  # apt-get install libjsoncpp-dev libopts25-dev cmake
+  # sudo apt-get install libjsoncpp-dev libopts25-dev cmake
 
 2. Make the build folder
 ************************
