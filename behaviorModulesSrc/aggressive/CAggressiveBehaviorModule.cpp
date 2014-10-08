@@ -49,7 +49,7 @@ E_BEHAVIOR_ACTIONS CAggressiveBehaviorModule::playBehavior(const CGame& inGame)
         const int targetHeroCellId = inGame.get1DCoordOnBoard(targetHeroPos);
 
         path_t targetHeroPath;
-        if (inGame.getPathTo(targetHeroCellId, targetHeroPath))
+        if (inGame.getPathTo(targetHeroCellId, false, targetHeroPath))
         {
 //             inGame.printPath(targetHeroPath, m_name);
 

@@ -98,6 +98,27 @@ class CPosition
             return vector4Connected;
         } // get4Connected
 
+        /**
+        * @brief Return the 8 connected positions of the current one
+        * @return the 8 connected positions of the current one
+        * 
+        * 8-connected cell order: 0,+1 # +1,+1 # +1,0 # +1,-1 # 0,-1 # -1,-1 # -1,0 # -1,+1
+        */
+        inline std::vector<CPosition> get8Connected() const
+        {
+            std::vector<CPosition> vector8Connected;
+            vector8Connected.reserve(8);
+            vector8Connected.emplace_back(m_x  , m_y+1);
+            vector8Connected.emplace_back(m_x+1, m_y+1);
+            vector8Connected.emplace_back(m_x+1, m_y);
+            vector8Connected.emplace_back(m_x+1, m_y-1);
+            vector8Connected.emplace_back(m_x  , m_y-1);
+            vector8Connected.emplace_back(m_x-1, m_y-1);
+            vector8Connected.emplace_back(m_x-1, m_y);
+            vector8Connected.emplace_back(m_x-1, m_y+1);
+            return vector8Connected;
+        } // get4Connected
+
     private:
         int m_x; ///< the x position
         int m_y; ///< the y position

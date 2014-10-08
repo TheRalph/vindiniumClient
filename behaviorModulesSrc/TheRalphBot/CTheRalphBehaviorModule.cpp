@@ -96,8 +96,16 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
     if (initialize())
     {
         const CHero &myHero = inGame.getMyHero();
-        if ( myHero.getMineCount() == inGame.getNbMines()                               ||
-             ( m_status != E_NEED_LIFE && myHero.getLife() < 0.35*myHero.getMaxLife() ) ||
+        int closestOpponentDistance = -1;
+        int closestOpponentId = -1;
+        const bool isClosestOpponentAvailable = inGame.getClosestOpponent(closestOpponentId, closestOpponentDistance);
+
+        if (isClosestOpponentAvailable && closestOpponentDistance <= 1)
+        {
+            m_status = E_AGGRESSIVE_CLOSE;
+        }
+        else if ( myHero.getMineCount() == inGame.getNbMines()                          ||
+             ( m_status != E_NEED_LIFE && myHero.getLife() < 0.25*myHero.getMaxLife() ) ||
              ( m_status == E_NEED_LIFE && myHero.getLife() < 0.98*myHero.getMaxLife() ) )
         {
             m_status = E_NEED_LIFE;
@@ -106,13 +114,10 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
         {
             int closestGoldMineDistance = -1;
             int closestGoldMineCellId = -1;
-            int closestOpponentDistance = -1;
-            int closestOpponentId = -1;
 //            int opponentIdWithMaxMineCount = -1;
 //            int MaxMineCountOfOpponent = -1;
 
             const bool isGoldMineAvailable = inGame.getClosestGoldMineCellIdMyHeroDoNotControl(closestGoldMineCellId, closestGoldMineDistance);
-            const bool isClosestOpponentAvailable = inGame.getClosestOpponent(closestOpponentId, closestOpponentDistance);
 //            const bool isOpponentWithMaxCountAvailable = inGame.getOpponentIdWithMaxMineCount(opponentIdWithMaxMineCount, MaxMineCountOfOpponent);
 
             const CHero *pClosestHero = (isClosestOpponentAvailable? &inGame.getHero(closestOpponentId):nullptr);

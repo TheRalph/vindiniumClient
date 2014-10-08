@@ -48,7 +48,7 @@ E_BEHAVIOR_ACTIONS CAggressiveCloseBehaviorModule::playBehavior(const CGame& inG
         const int targetHeroCellId = inGame.get1DCoordOnBoard(targetHeroPos);
 
         path_t targetHeroPath;
-        if (inGame.getPathTo(targetHeroCellId, targetHeroPath))
+        if (inGame.getPathTo(targetHeroCellId, false, targetHeroPath))
         {
 //             inGame.printPath(targetHeroPath, m_name);
 
