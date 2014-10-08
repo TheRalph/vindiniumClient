@@ -75,12 +75,23 @@ add_script()
 {
 scriptName=$1.sh
 cat > $scriptName << EOF
-#!/bin/sh
+#!/bin/bash
 
 $CMD_LINE --behaviour=$2 $KEY
 
 EOF
 chmod u+x $scriptName
+
+cat > loop_$scriptName << EOF
+#!/bin/bash
+
+while true;
+do
+    ./$scriptName
+done
+EOF
+chmod u+x loop_$scriptName
+
 } # add_script
 
 ################################################################################
