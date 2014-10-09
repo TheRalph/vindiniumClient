@@ -118,69 +118,70 @@ bool parseOptions(const int inArgc, char **inArgv, struct SParameters& outParame
     }
     else
     {
-        char opt;
-
+        int opt = 0;
         do
         {
             opt = getopt_long(inArgc, inArgv, short_options, long_options, NULL);
 
-            switch(opt)
+            if (opt > 0)
             {
-                case 'h':
-                    displayHelp(exeName);
-                    break;
+                const char optChar = (char)(opt&255); 
+                switch(optChar)
+                {
+                    case 'h':
+                        displayHelp(exeName);
+                        break;
 
-                case 'u':
-                    outParameters.m_url = std::string(optarg);
-                    break;
+                    case 'u':
+                        outParameters.m_url = std::string(optarg);
+                        break;
 
-                case 'k':
-                    outParameters.m_key = std::string(optarg);
-                    break;
+                    case 'k':
+                        outParameters.m_key = std::string(optarg);
+                        break;
 
-                case 'b':
-                    outParameters.m_behaviour = std::string(optarg);
-                    break;
+                    case 'b':
+                        outParameters.m_behaviour = std::string(optarg);
+                        break;
 
-                case 'a':
-                    {
-                        int mode = atoi(optarg);
-                        if ((mode >= 0) && (mode < MOBE::NB_VINDINIUM_MODE))
+                    case 'a':
                         {
-                            outParameters.m_mode = (MOBE::E_VINDINIUM_MODE)mode;
+                            int mode = atoi(optarg);
+                            if ((mode >= 0) && (mode < MOBE::NB_VINDINIUM_MODE))
+                            {
+                                outParameters.m_mode = (MOBE::E_VINDINIUM_MODE)mode;
+                            }
+                            else
+                            {
+                                std::cerr << "Invalid mode" << std::endl;
+                                parseOk = false;
+                            } // else
                         }
-                        else
-                        {
-                            std::cerr << "Invalid mode" << std::endl;
-                            parseOk = false;
-                        } // else
-                    }
-                    break;
+                        break;
 
-                case 'n':
-                    outParameters.m_turns = atoi(optarg);
-                    break;
+                    case 'n':
+                        outParameters.m_turns = atoi(optarg);
+                        break;
 
-                case 'm':
-                    outParameters.m_map = std::string(optarg);
-                    break;
+                    case 'm':
+                        outParameters.m_map = std::string(optarg);
+                        break;
 
-                case 'w':
-                    outParameters.m_browser = std::string(optarg);
-                    break;
+                    case 'w':
+                        outParameters.m_browser = std::string(optarg);
+                        break;
 
-                case -1:
-                    break;
+                    case '?':
+                        displayHelp(exeName);
+                        parseOk=false;
+                        break;
 
-                case '?':
-                    displayHelp(exeName);
-                    parseOk=false;
-                    break;
-
-                default:
-                    abort();
-                    break;
-            } // switch
+                    default:
+                        std::cerr<<"Unknown option '"<<optChar<<"'"<<std::endl;
+                        parseOk=false;
+                        break;
+                } // switch
+            } else {}
         } while (opt != -1 && parseOk);
 
         // One argument after options: the key
