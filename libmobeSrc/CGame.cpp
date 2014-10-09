@@ -227,9 +227,9 @@ void CGame::updateCurrentBoard()
             const CPosition& heroPos = hero.getPosition();
             const int heroCellId = get1DCoordOnBoard(heroPos);
             m_currentBoard.at(heroCellId) = E_HERO;
-
-            const std::vector<CPosition> security(heroPos.get8Connected());
             m_currentBoardAvoidHeros.at(heroCellId) = E_HERO;
+#if 0
+            const std::vector<CPosition> security(heroPos.get8Connected());
             for (const CPosition& posSecurity : security)
             {
                 if ( posSecurity.getX() >= 0 && posSecurity.getX() < m_boardEdgeSize &&
@@ -238,6 +238,7 @@ void CGame::updateCurrentBoard()
                     m_currentBoardAvoidHeros.at(get1DCoordOnBoard(posSecurity)) = E_IMPASSABLE_WOOD;
                 } else {}
             } // for
+#endif
         } else {}
     } // for
 } // updateCurrentBoard

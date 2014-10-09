@@ -216,13 +216,18 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
                         currentGame.update(jsonValues["game"]); // hero update is done in game
                     } // end data processing
 
-                    std::cout<<"---> Turn="<<std::setw(3)<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
+                    std::cout<<"---> Turn="<<std::setw(3)<<currentGame.getTrueTurn()<<"/"<<currentGame.getTrueMaxTurn()<<" ( "<<std::setw(3)<<(int)(100.0*(float)currentGame.getTrueTurn()/(float)currentGame.getTrueMaxTurn())<<" % ) ";
 //                    std::cout<<m_pActiveBehavior->getName()<<" ";
                     std::cout<<std::setw(6)<<G_BEHAVIOR_ACTIONS_DICTIONARY[newDirection]<<" ";
                     std::cout.setf( std::ios::fixed, std::ios::floatfield );
-                    std::cout<<std::setprecision(3)<<"Process data="<<processDataInMs<<" ms, Behavior="<<behaviorTimeMs<<" ms, ";
-                    std::cout<<std::setprecision(3)<<"Total client time="<<processDataInMs+behaviorTimeMs<<" ms, ";
-                    std::cout<<std::setprecision(3)<<"Waiting for server="<<waitingForServerInMs<<" ms";
+//                    std::cout<<std::setprecision(3)<<"Process data="<<std::setw(6)<<processDataInMs<<" ms, Behavior="<<std::setw(6)<<behaviorTimeMs<<" ms, ";
+                    std::cout<<std::setprecision(3)<<"Client="<<std::setw(6)<<processDataInMs+behaviorTimeMs<<" ms, ";
+                    std::cout<<std::setprecision(3)<<"Server="<<std::setw(8)<<waitingForServerInMs<<" ms, ";
+                    for (int heroId = 1; heroId <= currentGame.getNbPlayers(); heroId++)
+                    {
+                        const CHero& hero = currentGame.getHero(heroId);
+                        std::cout<<hero.getName()<<" ("<<std::setw(4)<<hero.getGold()<<") ";
+                    } // for
                     std::cout<<std::endl;
 //                    std::cout<<"     \r"<<std::endl;
 //                    std::cout.flush();
