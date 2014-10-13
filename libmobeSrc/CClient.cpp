@@ -162,7 +162,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
             else
             {
                 std::cout<<"Starting game..."<<std::endl;
-                
+
                 CGame currentGame(jsonValues["game"], jsonValues["hero"]["id"].asInt());
 
                 std::string token   = jsonValues["token"].asString();

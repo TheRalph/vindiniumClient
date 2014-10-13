@@ -25,27 +25,6 @@ namespace MOBE
 {
 
 /**
- * @brief Vindinium managed directions
- */
-enum E_BEHAVIOR_ACTIONS
-{
-    E_ACTION_STAY = 0,   ///< Stay here
-    E_ACTION_MOVE_NORTH, ///< Move to the North
-    E_ACTION_MOVE_SOUTH, ///< Move to the South
-    E_ACTION_MOVE_EAST,  ///< Move to the East
-    E_ACTION_MOVE_WEST,  ///< Move to the West
-    NB_BEHAVIOR_ACTIONS  ///< number of managed actions
-}; // enum E_BEHAVIOR_ACTIONS
-
-static const std::string G_BEHAVIOR_ACTIONS_DICTIONARY[NB_BEHAVIOR_ACTIONS]={
-    "Stay",
-    "North",
-    "South",
-    "East",
-    "West"
-}; ///< Dictionary of behaviors actions
-
-/**
  * @brief Definition of possible objects in the board
  */
 enum E_BOARD_OBJECTS
@@ -88,6 +67,7 @@ class CGame
 
         /**
         * @brief Get path from the current hero position to go to a given cellId
+        * @param inHeroId the hero id to work with
         * @param inCellId the cellId to go to
         * @param inAvoidHeros set to true to find a path and try to not meet other heros
         * @param outPath path from the current hero position to go to a given cellId
@@ -95,10 +75,11 @@ class CGame
         * 
         * Hero cellId is not in the path, destination cellId is the last element of the path
         */
-        bool getPathTo(const int inCellId, bool inAvoidHeros, path_t& outPath) const;
+        bool getPathTo(const int inHeroId, const int inCellId, bool inAvoidHeros, path_t& outPath) const;
 
         /**
         * @brief Get number of cells from the current hero and a position to reach (shortest path)
+        * @param inHeroId the hero id to work with
         * @param inPosition the position to use
         * @param inAvoidHeros set to true to find a path and try to not meet other heros
         * @return the number of cells to cross to reach the given position
@@ -106,17 +87,18 @@ class CGame
         * A negative value means, the destination can not be reached
         * call of CGame::getDistanceTo(const int inCellId)
         */
-        int getDistanceTo(const CPosition& inPosition, bool inAvoidHeros) const;
+        int getDistanceTo(const int inHeroId, const CPosition& inPosition, bool inAvoidHeros) const;
 
         /**
         * @brief Get number of cells from the current hero and a cellId to reach (shortest path)
+        * @param inHeroId the hero id to work with
         * @param inCellId the cellId to use
         * @param inAvoidHeros set to true to find a path and try to not meet other heros
         * @return the number of cells to cross to reach the given cellId
         * 
         * A negative value means, the destination can not be reached
         */
-        int getDistanceTo(const int inCellId, bool inAvoidHeros) const;
+        int getDistanceTo(const int inHeroId, const int inCellId, bool inAvoidHeros) const;
 
         /**
         * @brief Get the opponent id with the max mine count
@@ -144,12 +126,23 @@ class CGame
 
         /**
         * @brief Get the cellId and the path to reach the closest tavern
+        * @param inHeroId the hero to work with
         * @param outTavernCellId the cellId of the tavern found. If no tavern is found outTavernCellId = -1
         * @param outClosestTavernPath the path to reach the tavern found. If no tavern is found outClosestTavernPath is empty
         * @param inAvoidHeros set to true to find a path and try to not meet other heros. Default is true
         * @return true is a tavern has been found
         */
-        bool getClosestTavernPath(int &outTavernCellId, path_t &outClosestTavernPath, bool inAvoidHeros = true) const;
+        bool getClosestTavernPath(const int inHeroId, int &outTavernCellId, path_t &outClosestTavernPath, bool inAvoidHeros = true) const;
+
+        /**
+        * @brief Get the cellId and the path to reach the closest tavern
+        * @param inHeroId the hero to work with
+        * @param outTavernCellId the cellId of the tavern found. If no tavern is found outTavernCellId = -1
+        * @param outBestDist the distance to the tavern found.  If no tavern is found outBestDist = -1
+        * @param inAvoidHeros set to true to find a path and try to not meet other heros. Default is true
+        * @return true is a tavern has been found
+        */
+        bool getClosestTavernDistance(const int inHeroId, int &outTavernCellId, int& outBestDist, bool inAvoidHeros = true) const;
 
         /**
         * @brief Get the cellId and the distance of the closest gold mine the current hero do not own
@@ -207,7 +200,21 @@ class CGame
         * @brief Return the id of the current hero to play
         * @return the id of the current hero to play
         */
-        inline int getMyHeroId() { return m_myHeroId; }
+        inline const int getMyHeroId() const { return m_myHeroId; }
+
+        /**
+        * @brief Return the distance map of a given hero (read only)
+        * @param inHeroId The hero id to get the distance map from
+        * @return the distance map of a given hero (read only)
+        */
+        inline const std::vector<int>& getBoardDistancesOfHero(const int inHeroId) const { return m_boardDistances.at(inHeroId-1);}
+
+        /**
+        * @brief Return the distance map of a given hero (read/write)
+        * @param inHeroId The hero id to get the distance map from
+        * @return the distance map of a given hero (read/write)
+        */
+        inline std::vector<int>& getBoardDistancesOfHero(const int inHeroId) { return m_boardDistances.at(inHeroId-1);}
 
         /**
         * @brief Return a vector with links to the opponent heros
@@ -336,12 +343,14 @@ class CGame
         /**
         * @brief Update the board distances definition according to heros positions
         * @param inBoard The borad to compute the distance map from
+        * @param inCellId The cell id to create the distance map from
         * @param outBoardDistance The resulting distance map
         */
-        void updateBoardDistances(const std::vector<E_BOARD_OBJECTS>& inBoard, std::vector<int> &outBoardDistance);
+        void updateBoardDistances(const std::vector<E_BOARD_OBJECTS>& inBoard, const int inCellId, std::vector<int> &outBoardDistance);
 
         /**
         * @brief get the smallest distance from the 4-connected cells in the distance map of the given position
+        * @param inHeroId the hero id to work with
         * @param inPosition the position to use
         * @param inAvoidHeros set to true to find a path and try to not meet other heros
         * @param outBestDist the best distance found
@@ -350,10 +359,11 @@ class CGame
         * -1 value in the distance map is a not reachable cell, so -1 values are not processed
         * if many solutions are available, only the last one is returned according the following 4-connected cell order:  0,+1 # +1,0 # 0,-1 # -1,0
         */
-        bool getSmallerNeighborValueInDistanceMap(const CPosition& inPosition, bool inAvoidHeros, int &outBestDist, int &outBestDistCellId) const;
+        bool getSmallerNeighborValueInDistanceMap(const int inHeroId, const CPosition& inPosition, bool inAvoidHeros, int &outBestDist, int &outBestDistCellId) const;
 
         /**
         * @brief get the smallest distance from the 4-connected cells in the distance map of the given cellId
+        * @param inHeroId the hero id to work with
         * @param inCellId the cellId to use
         * @param inAvoidHeros set to true to find a path and try to not meet other heros
         * @param outBestDist the best distance found
@@ -364,7 +374,7 @@ class CGame
         * 
         * call of CGame::getSmallerNeighborValueInDistanceMap(const CPosition& inPosition, int &outBestDist, int &outBestDistCellId)
         */
-        bool getSmallerNeighborValueInDistanceMap(const int inCellId, bool inAvoidHeros, int &outBestDist, int &outBestDistCellId) const;
+        bool getSmallerNeighborValueInDistanceMap(const int inHeroId, const int inCellId, bool inAvoidHeros, int &outBestDist, int &outBestDistCellId) const;
 
     private:
         std::string m_id;
@@ -383,7 +393,7 @@ class CGame
         std::vector<int> m_tavernCellIdsList; ///< the list of tavern cellId (position in 1D buffer)
         std::vector<int> m_goldMineCellIdsList; /// the list of gold mine cellId (position in 1D buffer)
         std::vector<int> m_unownedGoldMineCellIdsList; /// the list of gold mine cellId (position in 1D buffer) which are owned by no one
-        std::vector<int> m_boardDistances; ///< all the distances from my hero to each board cell
+        std::vector<std::vector<int>> m_boardDistances; ///< all the distances from each hero to each board cell
         std::vector<int> m_boardDistancesAvoidHeros; ///< all the distances from my hero to each board cell and security area
         std::vector<E_BOARD_OBJECTS> m_staticBoard; ///< board defined at the beginning of the game with only static objects
         std::vector<E_BOARD_OBJECTS> m_currentBoard; ///< current board with other heros

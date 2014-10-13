@@ -21,6 +21,27 @@ namespace Json
 namespace MOBE
 {
 
+/**
+ * @brief Vindinium managed directions
+ */
+enum E_BEHAVIOR_ACTIONS
+{
+    E_ACTION_STAY = 0,   ///< Stay here
+    E_ACTION_MOVE_NORTH, ///< Move to the North
+    E_ACTION_MOVE_SOUTH, ///< Move to the South
+    E_ACTION_MOVE_EAST,  ///< Move to the East
+    E_ACTION_MOVE_WEST,  ///< Move to the West
+    NB_BEHAVIOR_ACTIONS  ///< number of managed actions
+}; // enum E_BEHAVIOR_ACTIONS
+
+static const std::string G_BEHAVIOR_ACTIONS_DICTIONARY[NB_BEHAVIOR_ACTIONS]={
+    "Stay",
+    "North",
+    "South",
+    "East",
+    "West"
+}; ///< Dictionary of behaviors actions
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -130,9 +151,17 @@ class CHero
         inline void setMaxLife(const int inMaxLife) { m_maxLife = inMaxLife; }
 
         /**
+        * @brief Return the last action of the hero
+        */
+        inline const E_BEHAVIOR_ACTIONS getLastAction() const { return m_lastAction; }
+
+        /**
         * @brief Print in the standard output the current hero data
         */
         void print() const;
+
+    private:
+        E_BEHAVIOR_ACTIONS getLastActionId(const std::string &inActionStr) const;
 
     private:
         int m_id;
@@ -147,6 +176,7 @@ class CHero
         bool m_isCrashed;
         std::vector<int> m_ownedGoldMineCellIds;
         int m_maxLife;
+        E_BEHAVIOR_ACTIONS m_lastAction;
 }; // class CHero
 
 } // namespace MOBE

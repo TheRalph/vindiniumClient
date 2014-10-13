@@ -54,9 +54,26 @@ void CHero::update(const Json::Value& inJsonValues)
     m_gold = inJsonValues["gold"].asInt();
     m_mineCount = inJsonValues["mineCount"].asInt();
     m_isCrashed = inJsonValues["crashed"].asInt();
-
+    m_lastAction = getLastActionId(inJsonValues["lastDir"].asString());
 //std::cout<<"["<<m_id<<"] "<<m_position.getX()<<" , "<<m_position.getY()<<std::endl;
 } // update
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+E_BEHAVIOR_ACTIONS CHero::getLastActionId(const std::string &inActionStr) const
+{
+    E_BEHAVIOR_ACTIONS retVal = E_ACTION_STAY;
+    bool actionFound = false;
+    for (int i = 0; !actionFound && i < NB_BEHAVIOR_ACTIONS; i++)
+    {
+        actionFound = (G_BEHAVIOR_ACTIONS_DICTIONARY[i] == inActionStr);
+        if (actionFound)
+        {
+            retVal = (E_BEHAVIOR_ACTIONS)i;
+        } else {}
+    } // for
+    return retVal;
+} // getLastActionId
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +85,7 @@ void CHero::print() const
     std::cout<<"UserId="<<m_userId<<std::endl;
     std::cout<<"Elo="<<m_elo<<std::endl;
     std::cout<<"Position="<<m_position.getX()<<" , "<<m_position.getY()<<std::endl;
+    std::cout<<"LastAction"<<G_BEHAVIOR_ACTIONS_DICTIONARY[m_lastAction]<<std::endl;
     std::cout<<"Life="<<m_life<<std::endl;
     std::cout<<"Gold="<<m_gold<<std::endl;
     std::cout<<"MineCount="<<m_mineCount<<std::endl;

@@ -41,12 +41,12 @@ E_BEHAVIOR_ACTIONS CNeedLifeBehaviorModule::playBehavior(const CGame& inGame)
 
     path_t closestTavernPath;
     int closestTavernCellId = -1;
+    const CHero &myHero = inGame.getMyHero();
 
-    if (inGame.getClosestTavernPath(closestTavernCellId, closestTavernPath))
+    if (inGame.getClosestTavernPath(myHero.getId(), closestTavernCellId, closestTavernPath))
     {
 //         inGame.printPath(closestTavernPath, m_name);
 
-        const CHero &myHero = inGame.getMyHero();
         const CPosition nextPosition(inGame.get2DCoordOnBoard(*closestTavernPath.cbegin()));
         int deltaX = nextPosition.getX() - myHero.getPosition().getX();
         int deltaY = nextPosition.getY() - myHero.getPosition().getY();

@@ -99,8 +99,14 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
         int closestOpponentDistance = -1;
         int closestOpponentId = -1;
         const bool isClosestOpponentAvailable = inGame.getClosestOpponent(closestOpponentId, closestOpponentDistance);
+        int closestOpponentClosestTavernId = -1;
+        int closestOpponentClosestTavernDistance = -1;;
+        const bool closestOpponentTavernAccess = inGame.getClosestTavernDistance(closestOpponentId, closestOpponentClosestTavernId, closestOpponentClosestTavernDistance);
 
-        if (isClosestOpponentAvailable && closestOpponentDistance <= 1)
+        if ( isClosestOpponentAvailable   &&
+             closestOpponentDistance <= 1 &&
+             (closestOpponentClosestTavernDistance > 1 || !closestOpponentTavernAccess)
+           )
         {
             m_status = E_AGGRESSIVE_CLOSE;
         }

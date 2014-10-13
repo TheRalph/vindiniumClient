@@ -77,7 +77,7 @@ scriptName=$1.sh
 cat > $scriptName << EOF
 #!/bin/bash
 
-$CMD_LINE --behaviour=$2 $KEY
+$CMD_LINE --behaviour=$2 \$@ $KEY
 
 EOF
 chmod u+x $scriptName
