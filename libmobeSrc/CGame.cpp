@@ -274,12 +274,16 @@ bool CGame::getClosestOpponent(int &outOpponentId, int &outOpponentDistance) con
     outOpponentDistance = std::numeric_limits<int>::max();
     for (const int &opponentHeroId : m_opponentHeroIds)
     {
-        const int opponentCellId = get1DCoordOnBoard(getHero(opponentHeroId).getPosition());
-        const int opponentDistance = getDistanceTo( getMyHeroId(), opponentCellId, false );
-        if ( opponentDistance >= 0 && opponentDistance < outOpponentDistance)
+        const CHero &opponent = getHero(opponentHeroId);
+        if (!opponent.isCrashed())
         {
-            outOpponentDistance = opponentDistance;
-            outOpponentId = opponentHeroId;
+            const int opponentCellId = get1DCoordOnBoard(opponent.getPosition());
+            const int opponentDistance = getDistanceTo( getMyHeroId(), opponentCellId, false );
+            if ( opponentDistance >= 0 && opponentDistance < outOpponentDistance)
+            {
+                outOpponentDistance = opponentDistance;
+                outOpponentId = opponentHeroId;
+            } else {}
         } else {}
     } // for
     bool retVal = (outOpponentId >= 0);
