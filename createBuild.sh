@@ -1,7 +1,7 @@
 #!/bin/bash
 
 URL=""
-KEY="uviqc5an" # Default is SSITeam
+KEY="z9207blg" # Default is CPPClientSDK
 MODE=""
 NB_TURNS=""
 MAP=""
