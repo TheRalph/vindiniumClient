@@ -34,6 +34,7 @@ mv $newBehaviorPath/CRandomBehaviorModule.h $classFilePath.h
 sed -i "s/CRandomBehaviorModule/$className/g" $classFilePath.cpp
 sed -i "s/CRandomBehaviorModule/$className/g" $classFilePath.h
 sed -i "s/Random Behavior/$NewBehaviorName Behavior/g" $classFilePath.h
+sed -i "s/Raphaël La Greca <raphael.la.greca+vindinium@gmail.com>/$USER/g" $classFilePath.h
 
 sed -i "s/\"random\"/\"$newBehaviorName\"/g" $classFilePath.cpp
 sed -i "s/a random displacement/a new random displacement/g" $classFilePath.cpp
