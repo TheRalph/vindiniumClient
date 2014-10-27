@@ -1,3 +1,15 @@
+*****************************************
+** C++ client for Vindinium game (Artificial Intelligence programming challenge)
+**
+** http://vindinium.org/
+*****************************************
+
+0. The first step: register your own Bot!
+*****************************************
+
+The first step is to register your own Bot and to get your own vindinium key:
+http://vindinium.org/register
+
 1. Install the needed libraries and tools
 *****************************************
 
@@ -32,3 +44,15 @@ For more information:
 
   $ ./vindiniumLauncher --help
 
+5. To create your own AI
+************************
+
+In this client, all is "behavior"! So to create an AI, you need to create a behavior ;o).
+To create a new behavior "myAI", use the following command:
+
+  $ ./createBehavior.sh myAI
+
+The source code of the new behavior will be created into "behaviorModulesSrc/myAI" like the random one.
+Then modify it and compile it again, you can then use it as all the other ones :).
+
+Good game !!!!!
