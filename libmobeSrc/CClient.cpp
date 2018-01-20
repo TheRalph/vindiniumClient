@@ -156,6 +156,7 @@ bool CClient::startGame(const E_VINDINIUM_MODE inMode, const int inNbTurns, cons
         std::string fullUrl(m_svrHostName+"/"+G_SUBURL_PER_MODE[inMode]);
 
 //std::cout<<"fullURL="<<fullUrl<<std::endl;
+        std::cout<<G_VINDINIUM_MODE_DICTIONARY[inMode]<<std::endl;
         std::stringstream sstr;
         sstr<<"key="<<m_key;
         if (inNbTurns > 0)

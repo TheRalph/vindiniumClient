@@ -220,11 +220,11 @@ E_BEHAVIOR_ACTIONS CTheRalphBehaviorModule::playBehavior(const CGame& inGame)
             fileName<<"./dump/"<<m_name<<"_"<<G_THE_RALPH_BOT_STATES_DICTIONARY[m_status]<<"_"<<inGame.getTrueTurn()<<"_"<<myHero.getId()<<".json";
             if (inGame.dumpBoardData(fileName.str()))
             {
-                std::cout<<"'"<<fileName<<"' dump OK"<<std::endl;
+                std::cout<<"'"<<fileName.str()<<"' dump OK"<<std::endl;
             }
             else
             {
-                std::cerr<<"'"<<fileName<<"' dump NOT OK"<<std::endl;
+                std::cerr<<"'"<<fileName.str()<<"' dump NOT OK"<<std::endl;
             }
         } else {}
 

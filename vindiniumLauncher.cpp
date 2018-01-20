@@ -114,7 +114,7 @@ void displayHelp(const std::string& inExeName)
     std::cout << "      The browser your want to open to display the game."       << std::endl;
     std::cout << "      Default: none."                                           << std::endl;
     std::cout                                                                     << std::endl;
-    std::cout << "Example: '"<<inExeName<<" --behaviour=random --browser=firefox --mode=arena' uviqc5an"<< std::endl;
+    std::cout << "Example: '"<<inExeName<<" --behaviour=random --browser=firefox --mode=1' uviqc5an"<< std::endl;
     std::cout                                                                     << std::endl;
 
     // Behaviour
